@@ -3,7 +3,6 @@ import { igdl } from 'ruhend-scraper'
 // --- Configuración Autónoma (Sin dependencias externas) ---
 const newsletterJid = '120363418071540900@newsletter';
 const newsletterName = '⏤͟͞ू⃪⁞⟡ 𝐄llen 𝐉ᴏ𝐄\'s 𝐒ervice';
-const icons = 'https://i.ibb.co/3S9p6Yp/ellen-joe.jpg'; // Imagen por defecto
 const redes = 'https://facebook.com'; // Link por defecto
 
 const handler = async (m, { text, conn, args }) => {
@@ -16,8 +15,8 @@ const handler = async (m, { text, conn, args }) => {
     forwardingScore: 999,
     forwardedNewsletterMessageInfo: { newsletterJid, newsletterName, serverMessageId: -1 },
     externalAdReply: {
-      title: 'Ellen Joe: Descarga de Facebook 🦈',
-      body: `Proxy: ${name}`,
+      title: 'Eris-MD: Descarga de Facebook 🦈',
+      body: `USUARIO: ${name}`,
       thumbnailUrl: icons, 
       sourceUrl: redes,
       mediaType: 1,
@@ -30,7 +29,7 @@ const handler = async (m, { text, conn, args }) => {
   }
 
   try {
-    await m.react('🔄');
+    await m.react('⌛');
     
     // Intentar obtener datos
     const res = await igdl(args[0]);

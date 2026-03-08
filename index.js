@@ -45,7 +45,7 @@ let { say } = cfonts
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 
-// ASCII Art representando a Ellen-Joe
+// ASCII Art representando a Eris
 console.log(chalk.cyan(`
                                                                     
                                      @@.                            
@@ -75,7 +75,7 @@ console.log(chalk.cyan(`
               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      
 `))
 
-cfonts.say('Ellen-Joe Bot', {
+cfonts.say('Eris Bot', {
   font: 'chrome',
   align: 'center',
   gradient: ['#00FFFF', '#8A2BE2'], // Colores cyberpunk: Cian y Azul-Violeta
@@ -84,15 +84,15 @@ cfonts.say('Ellen-Joe Bot', {
 })
 
 // Créditos
-cfonts.say('Adaptado para Ellen-Joe por: Nevi-dev', {
+cfonts.say('Adaptado para Eris por: Nevi-dev', {
   font: 'console',
   align: 'center',
   colors: ['cyan']
 })
 
 console.log(chalk.magentaBright('═════════════════════════════════════════════════════════════════════'))
-console.log(chalk.cyanBright('          🚀 Bienvenido al núcleo del Bot Ellen-Joe 🚀'))
-console.log(chalk.whiteBright('  Iniciando sistemas... Ellen está lista para ayudarte en tu próximo encargo ✨'))
+console.log(chalk.cyanBright('          🚀 Bienvenido al núcleo del Bot Eris 🚀'))
+console.log(chalk.whiteBright('  Iniciando sistemas... Eris está lista para ayudarte en tu próximo encargo ✨'))
 console.log(chalk.magentaBright('═════════════════════════════════════════════════════════════════════\n'))
 
 protoType()
@@ -208,7 +208,7 @@ if (!!phoneNumber) {
 addNumber = phoneNumber.replace(/[^0-9]/g, '')
 } else {
 do {
-phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`✦ Por favor, ingrese el número de WhatsApp.\n${chalk.bold.yellowBright(`✏️  Ejemplo: 1234567890`)}\n${chalk.bold.magentaBright('---> ')}`)))
+phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`✦ Por favor, ingrese el número de WhatsApp.\n${chalk.bold.yellowBright(`✏️  Ejemplo: 1234567890`)}\n${chalk.bold.magentaBright('---\u003e ')}`)))
 phoneNumber = phoneNumber.replace(/\D/g,'')
 if (!phoneNumber.startsWith('+')) {
 phoneNumber = `+${phoneNumber}`
@@ -255,7 +255,7 @@ if (opcion == '1' || methodCodeQR) {
 console.log(chalk.bold.yellow(`\n❐ ESCANEA EL CÓDIGO QR, EXPIRA EN 45 SEGUNDOS`))}
 }
 if (connection == 'open') {
-console.log(chalk.bold.green('\n❀ Ellen-Bot Conectado Exitosamente ❀'))
+console.log(chalk.bold.green('\n❀ Eris-Bot Conectado Exitosamente ❀'))
 }
 
 let reason = new Boom(lastDisconnect?.error)?.output?.statusCode
@@ -374,7 +374,7 @@ try {
 const module = (await import(`${global.__filename(dir)}?update=${Date.now()}`));
 global.plugins[filename] = module.default || module;
 } catch (e) {
-conn.logger.error(`error al requerir el plugin '${filename}\n${format(e)}'`)
+conn.logger.error(`error al requerir el plugin '${filename}\n${format(e)}`)
 } finally {
 global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)))
 }}
@@ -458,12 +458,14 @@ originalConsoleMethod.apply(console, arguments)
 setInterval(async () => {
 if (stopped === 'close' || !conn || !conn.user) return
 await clearTmp()
-console.log(chalk.bold.cyanBright(`\n╭» ❍ MULTIMEDIA ❍\n│→ ARCHIVOS DE LA CARPETA TMP ELIMINADOS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ⌫ ♻`))}, 1000 * 60 * 4) // 4 min
+console.log(chalk.bold.cyanBright(`\n╭» ❍ MULTIMEDIA ❍\n│→ ARCHIVOS DE LA CARPETA TMP ELIMINADOS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ⌫ ♻`))
+}, 1000 * 60 * 4) // 4 min
 
 setInterval(async () => {
 if (stopped === 'close' || !conn || !conn.user) return
 await purgeEllenSession()
-console.log(chalk.bold.cyanBright(`\n╭» ❍ ${global.Ellensessions} ❍\n│→ SESIONES NO ESENCIALES ELIMINADAS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ⌫ ♻`))}, 1000 * 60 * 10) // 10 min
+console.log(chalk.bold.cyanBright(`\n╭» ❍ ${global.Ellensessions} ❍\n│→ SESIONES NO ESENCIALES ELIMINADAS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ⌫ ♻`))
+}, 1000 * 60 * 10) // 10 min
 
 // setInterval que limpiaba / manejaba sub-bots (jadibot) eliminado.
 
