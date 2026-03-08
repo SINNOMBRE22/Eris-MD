@@ -30,7 +30,7 @@
       "useDocument": false,
       "bank": 0,
       "warn": 0,
-      "spam": 1772944623901,
+      "spam": 1772946028199,
       "crime": 0,
       "premium": false,
       "premiumTime": 0,
@@ -125,10 +125,10 @@
   },
   "stats": {
     "menu.js": {
-      "total": 2,
-      "success": 2,
-      "last": 1772944591302,
-      "lastSuccess": 1772944591302
+      "total": 3,
+      "success": 3,
+      "last": 1772946028782,
+      "lastSuccess": 1772946028782
     },
     "usuarios-demo.js": {
       "total": 4,
