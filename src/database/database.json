@@ -1,6 +1,6 @@
 {
   "users": {
-    "5215629885039@s.whatsapp.net": {
+    "51793362997363@s.whatsapp.net": {
       "joincount": 1,
       "diamond": 3,
       "lastadventure": 0,
@@ -30,12 +30,9 @@
       "useDocument": false,
       "bank": 0,
       "warn": 0,
-      "spam": 1772946028199,
       "crime": 0,
       "premium": false,
-      "premiumTime": 0,
-      "comandos": 1,
-      "lastusuario": 1772944608880
+      "premiumTime": 0
     },
     "5217971520357@s.whatsapp.net": {
       "joincount": 1,
@@ -70,6 +67,76 @@
       "crime": 0,
       "premium": false,
       "premiumTime": 0
+    },
+    "51793362997363@lid": {
+      "joincount": 1,
+      "diamond": 3,
+      "lastadventure": 0,
+      "health": 100,
+      "lastclaim": 0,
+      "lastcofre": 0,
+      "lastdiamantes": 0,
+      "lastcode": 0,
+      "lastduel": 0,
+      "lastpago": 0,
+      "lastmining": 0,
+      "lastcodereg": 0,
+      "muto": false,
+      "registered": false,
+      "genre": "",
+      "birth": "",
+      "marry": "",
+      "description": "",
+      "packstickers": null,
+      "name": "",
+      "age": -1,
+      "regTime": -1,
+      "afk": -1,
+      "afkReason": "",
+      "role": "Nuv",
+      "banned": false,
+      "useDocument": false,
+      "bank": 0,
+      "warn": 0,
+      "spam": 1773027877087,
+      "crime": 0,
+      "premium": false,
+      "premiumTime": 0
+    },
+    "5215629885039@s.whatsapp.net": {
+      "joincount": 1,
+      "diamond": 3,
+      "lastadventure": 0,
+      "health": 100,
+      "lastclaim": 0,
+      "lastcofre": 0,
+      "lastdiamantes": 0,
+      "lastcode": 0,
+      "lastduel": 0,
+      "lastpago": 0,
+      "lastmining": 0,
+      "lastcodereg": 0,
+      "muto": false,
+      "registered": false,
+      "genre": "",
+      "birth": "",
+      "marry": "",
+      "description": "",
+      "packstickers": null,
+      "name": "SinNombre",
+      "age": -1,
+      "regTime": -1,
+      "afk": -1,
+      "afkReason": "",
+      "role": "Nuv",
+      "banned": false,
+      "useDocument": false,
+      "bank": 0,
+      "warn": 0,
+      "spam": 1773033110218,
+      "crime": 0,
+      "premium": false,
+      "premiumTime": 0
     }
   },
   "chats": {
@@ -98,7 +165,7 @@
       ],
       "autosticker": false
     },
-    "5215629885039@s.whatsapp.net": {
+    "5217971520357@s.whatsapp.net": {
       "sAutoresponder": "",
       "welcome": true,
       "isBanned": false,
@@ -120,21 +187,53 @@
       "antiLag": false,
       "per": [
         "5217971520357@s.whatsapp.net"
-      ]
+      ],
+      "autosticker": false
+    },
+    "120363406810359242@g.us": {
+      "sAutoresponder": "",
+      "welcome": true,
+      "isBanned": false,
+      "autolevelup": false,
+      "autoresponder": false,
+      "delete": false,
+      "autoAceptar": false,
+      "autoRechazar": false,
+      "detect": true,
+      "antiBot": false,
+      "antiBot2": false,
+      "modoadmin": false,
+      "antiLink": true,
+      "antiImg": false,
+      "reaction": false,
+      "nsfw": false,
+      "antifake": false,
+      "expired": 0,
+      "antiLag": false,
+      "per": [
+        "5217971520357@s.whatsapp.net"
+      ],
+      "autosticker": false
     }
   },
   "stats": {
-    "menu.js": {
+    "menus/menu.js": {
+      "total": 31,
+      "success": 31,
+      "last": 1773033110588,
+      "lastSuccess": 1773033110588
+    },
+    "netfre/usuarios-demo.js": {
       "total": 3,
       "success": 3,
-      "last": 1772946028782,
-      "lastSuccess": 1772946028782
+      "last": 1773030711033,
+      "lastSuccess": 1773030711033
     },
-    "usuarios-demo.js": {
-      "total": 4,
-      "success": 4,
-      "last": 1772944624581,
-      "lastSuccess": 1772944624581
+    "owner/saveimage.js": {
+      "total": 9,
+      "success": 9,
+      "last": 1773029869987,
+      "lastSuccess": 1773029869987
     }
   },
   "msgs": {},

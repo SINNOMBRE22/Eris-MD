@@ -54,7 +54,7 @@ const coloredTitle = title.split('').map((ch, i) => {
 console.log('\n' + coloredTitle)
 console.log(chalk.gray('────────────────────────────────\n'))
 console.log(chalk.yellow('Sistema      :') + ' ' + chalk.green('WhatsApp Automation'))
-console.log(chalk.yellow('Developer    :') + ' ' + chalk.green('Nevi-dev'))
+console.log(chalk.yellow('Developer    :') + ' ' + chalk.green('SinNombre'))
 console.log(chalk.yellow('Runtime      :') + ' ' + chalk.green('NodeJS'))
 console.log(chalk.yellow('Engine       :') + ' ' + chalk.green('Baileys MD'))
 console.log('\n' + chalk.gray('────────────────────────────────') + '\n')

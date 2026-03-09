@@ -8,13 +8,37 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 
 // --- Números y permisos (editar solo los valores) ---
-//global.botNumber = '5217971520357' // número del bot (sin "+" ni @)
+/*
+// --- Números y permisos (editar solo los valores) ---
 global.owner = [
-  ['525629885039', 'SinNombre', true], // owner principal
+  ['525629885039', 'SinNombre', true], // Tu número real
 ]
+global.rowner = [
+  ['525629885039', 'SinNombre', true], // Tu número real
+]
+
 global.mods = []
 global.prems = []
 global.suittag = []
+*/
+
+//BETA: Si quiere evitar escribir el número que será bot en la consola, agregué desde aquí entonces:
+//Sólo aplica para opción 2 (ser bot con código de texto de 8 digitos)
+global.botNumber = '' //Ejemplo: 573218138672
+
+//*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
+
+global.owner = [
+// <-- Número @s.whatsapp.net -->
+  ['5215629885039', 'SinNombre', true],
+  ['525629885039', 'SinNombre', true],
+];
+
+//*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
+
+global.mods = []
+global.suittag = ['18096758983']
+global.prems = []
 
 // --- Info visible del bot ---
 global.libreria = 'Baileys'

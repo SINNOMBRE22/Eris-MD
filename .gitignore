@@ -1,4 +1,7 @@
 node_modules
-EllenSessions
+ErisSessions
 tmp
 .npm
+.gitignore
+.git
+.src/database/database.json
