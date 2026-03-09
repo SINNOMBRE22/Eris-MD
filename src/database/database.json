@@ -98,7 +98,7 @@
       "useDocument": false,
       "bank": 0,
       "warn": 0,
-      "spam": 1773027877087,
+      "spam": 1773033635664,
       "crime": 0,
       "premium": false,
       "premiumTime": 0
@@ -133,10 +133,12 @@
       "useDocument": false,
       "bank": 0,
       "warn": 0,
-      "spam": 1773033110218,
+      "spam": 1773033661948,
       "crime": 0,
       "premium": false,
-      "premiumTime": 0
+      "premiumTime": 0,
+      "comandos": 1,
+      "lastusuario": 1773033662634
     }
   },
   "chats": {
@@ -214,26 +216,106 @@
         "5217971520357@s.whatsapp.net"
       ],
       "autosticker": false
+    },
+    "5215629885039@s.whatsapp.net": {
+      "sAutoresponder": "",
+      "welcome": true,
+      "isBanned": false,
+      "autolevelup": false,
+      "autoresponder": false,
+      "delete": false,
+      "autoAceptar": false,
+      "autoRechazar": false,
+      "detect": true,
+      "antiBot": false,
+      "antiBot2": false,
+      "modoadmin": false,
+      "antiLink": true,
+      "antiImg": false,
+      "reaction": false,
+      "nsfw": false,
+      "antifake": false,
+      "expired": 0,
+      "antiLag": false,
+      "per": [
+        "5217971520357@s.whatsapp.net"
+      ],
+      "autosticker": false
+    },
+    "51793362997363@s.whatsapp.net": {
+      "sAutoresponder": "",
+      "welcome": true,
+      "isBanned": false,
+      "autolevelup": false,
+      "autoresponder": false,
+      "delete": false,
+      "autoAceptar": false,
+      "autoRechazar": false,
+      "detect": true,
+      "antiBot": false,
+      "antiBot2": false,
+      "modoadmin": false,
+      "antiLink": true,
+      "antiImg": false,
+      "reaction": false,
+      "nsfw": false,
+      "antifake": false,
+      "expired": 0,
+      "antiLag": false,
+      "per": [
+        "5217971520357@s.whatsapp.net"
+      ],
+      "autosticker": false
+    },
+    "51793362997363@lid": {
+      "sAutoresponder": "",
+      "welcome": true,
+      "isBanned": false,
+      "autolevelup": false,
+      "autoresponder": false,
+      "delete": false,
+      "autoAceptar": false,
+      "autoRechazar": false,
+      "detect": true,
+      "antiBot": false,
+      "antiBot2": false,
+      "modoadmin": false,
+      "antiLink": true,
+      "antiImg": false,
+      "reaction": false,
+      "nsfw": false,
+      "antifake": false,
+      "expired": 0,
+      "antiLag": false,
+      "per": [
+        "5217971520357@s.whatsapp.net"
+      ]
     }
   },
   "stats": {
     "menus/menu.js": {
-      "total": 31,
-      "success": 31,
-      "last": 1773033110588,
-      "lastSuccess": 1773033110588
+      "total": 32,
+      "success": 32,
+      "last": 1773033235180,
+      "lastSuccess": 1773033235180
     },
     "netfre/usuarios-demo.js": {
-      "total": 3,
-      "success": 3,
-      "last": 1773030711033,
-      "lastSuccess": 1773030711033
+      "total": 10,
+      "success": 10,
+      "last": 1773033665141,
+      "lastSuccess": 1773033665141
     },
     "owner/saveimage.js": {
       "total": 9,
       "success": 9,
       "last": 1773029869987,
       "lastSuccess": 1773029869987
+    },
+    "netfre/demo.js": {
+      "total": 2,
+      "success": 2,
+      "last": 1773033579874,
+      "lastSuccess": 1773033579874
     }
   },
   "msgs": {},

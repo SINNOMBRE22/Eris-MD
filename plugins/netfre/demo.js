@@ -85,7 +85,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
 handler.help = ['vps']
 handler.tags = ['netfree']
-handler.command = /^(vps|user|demo|vpn|menu_vps)$/i
+handler.command = /^(vps|demo)$/i
 handler.private = true 
 
 // ==========================================
