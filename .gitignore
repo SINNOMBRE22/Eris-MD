@@ -2,7 +2,7 @@ node_modules
 ErisSessions/
 ErisSessions
 tmp
-
+session
 .npm
 .gitignore
 .git
