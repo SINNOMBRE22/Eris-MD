@@ -8,11 +8,12 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 
 // --- Números y permisos (editar solo los valores si procede) ---
-// Sólo existe un nivel de propietario (owner)
+// --- Números y permisos ---
 global.owner = [
-//  ['525629885039', 'SinNombre', true],
-  ['5215629885039', 'SinNombre', true],
+  ['525629885039', 'SinNombre', true],  // Formato estándar
+  ['5215629885039', 'SinNombre', true], // Formato con el 1 de México
 ];
+
 
 global.mods = []
 global.prems = []

@@ -1,142 +1,99 @@
-/*
-- Coded by I'm Fz
-- https/Github.com/FzTeis
-- Enhanced by Ellen Joe's Service
-*/
+/* ERIS-MD ANIME SEARCHER - PERSONALIZADO */
 
-import axios from 'axios';
-import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 
-// --- Constantes y Configuración de Transmisión ---
-const newsletterJid = '120363418071540900@newsletter';
-const newsletterName = '⏤͟͞ू⃪፝͜⁞⟡ 𝐄llen 𝐉ᴏ𝐄\'s 𝐒ervice';
+// --- DATOS OFICIALES DE ERIS ---
+const newsletterJid = '120363407502496951@newsletter';
+const newsletterName = 'Eris Service';
+const redes = 'https://github.com/SINNOMBRE22/Eris-MD';
 
-// Solución al ReferenceError: Definición de variables globales
-const defaultIcon = 'https://qu.ax/ZSkv.jpg'; 
-const defaultRedes = 'https://github.com/FzTeis';
+const handler = async (m, { conn, args, usedPrefix, command }) => {
+  const text = args.join(" ");
+  if (!text) {
+    return conn.reply(m.chat, `🌸 *¡Hola! Necesito el nombre de un anime para buscarlo por ti.*\n\n*Ejemplo:* ${usedPrefix + command} Solo Leveling`, m);
+  }
 
-// Function to shorten URLs
-async function getShortUrl(longUrl) {
-    try {
-        const response = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-        return response.data;
-    } catch (error) {
-        return longUrl;
-    }
-}
+  // Miniatura pequeña local (perfil2.jpeg)
+  let thumb;
+  try {
+    const imgPath = path.join(process.cwd(), 'src/imagenes/perfil2.jpeg');
+    thumb = fs.readFileSync(imgPath);
+  } catch {
+    thumb = Buffer.alloc(0); 
+  }
 
-// Function to get anime episodes (TioAnime)
-async function getAnimeEpisodes(url) {
-    try {
-        const response = await axios.get(url);
-        const html = response.data;
-        const $ = cheerio.load(html);
+  const name = await conn.getName(m.sender);
 
-        const script = $('script').filter((i, el) => {
-            const text = $(el).text();
-            return text.includes('var anime_info') && text.includes('var episodes');
-        });
-
-        if (script.length === 0) {
-            throw new Error('No se encontró la información. ¿Es un link válido de TioAnime?');
-        }
-
-        const scriptText = script.html();
-        const animeInfoMatch = scriptText.match(/var anime_info = (\[.*?\]);/);
-        const episodesMatch = scriptText.match(/var episodes = (\[.*?\]);/);
-
-        if (!animeInfoMatch || !episodesMatch) {
-            throw new Error('Estructura de la página no reconocida.');
-        }
-
-        const animeInfo = JSON.parse(animeInfoMatch[1]);
-        const episodes = JSON.parse(episodesMatch[1]);
-        const animeId = animeInfo[1];
-
-        const episodeUrls = episodes.reverse().map((episode, index) => ({
-            [`Episodio ${index + 1}`]: `https://tioanime.com/ver/${animeId}-${episode}`
-        }));
-
-        const nextEpisodeElement = $('span.next-episode span');
-        const nextEpisode = nextEpisodeElement.text().trim() || 'Finalizado / No anunciado';
-
-        return {
-            proximo_episodio: nextEpisode,
-            episodios: episodeUrls
-        };
-    } catch (error) {
-        return { error: `⚠️ *Error:* ${error.message}` };
-    }
-}
-
-let handler = async (m, { conn, command, args, text, usedPrefix }) => {
-    const name = conn.getName(m.sender);
-
-    const contextInfo = {
-        mentionedJid: [m.sender],
-        isForwarded: true,
-        forwardingScore: 999,
-        forwardedNewsletterMessageInfo: {
-            newsletterJid,
-            newsletterName,
-            serverMessageId: -1
-        },
-        externalAdReply: {
-            title: 'Ellen Joe: Pista localizada. 🦈',
-            body: `Analizando anime para Proxy ${name}...`,
-            thumbnailUrl: defaultIcon, // Corregido
-            sourceUrl: defaultRedes, // Corregido
-            mediaType: 1,
-            renderLargerThumbnail: false
-        }
-    };
-
-    if (!args[0]) {
-        return conn.reply(m.chat, `🦈 *Rastro frío, Proxy ${name}.* Pega el link de un anime de TioAnime.`, m, { contextInfo, quoted: m });
-    }
-
-    m.react('🔄');
+  try {
+    await m.react('🕓');
     
-    try {
-        let data = await getAnimeEpisodes(args[0]);
+    // Búsqueda de información técnica
+    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1`);
+    const json = await res.json();
 
-        if (data.error) {
-            await m.react('❌');
-            return conn.reply(m.chat, data.error, m, { contextInfo, quoted: m });
-        }
-
-        let messageText = `╭━━━━[ 𝙰𝚗𝚒𝚖𝚎 𝙸𝚗𝚏𝚘 ]━━━━⬣\n`;
-
-        if (data.episodios && data.episodios.length > 0) {
-            messageText += `• *Lista de Episodios:* \n`;
-            // Limitamos a los últimos 10 para no saturar el mensaje si es muy largo
-            const lastEpisodes = data.episodios.slice(0, 10);
-            for (const episode of lastEpisodes) {
-                const [key, url] = Object.entries(episode)[0];
-                messageText += `  ${key}: 🔗 ${url}\n`;
-            }
-        } else {
-            messageText += `• No se encontraron episodios.\n`;
-        }
-
-        messageText += `\n📺 *Próximo:* ${data.proximo_episodio}\n╰━━━━━━━━━━━━━━━━━━━━━━━⬣`;
-
-        await conn.sendMessage(m.chat, { text: messageText }, { quoted: m });
-        await m.react('✅');
-
-    } catch (error) {
-        await m.react('❌');
-        conn.reply(m.chat, `⚠️ *Anomalía:* ${error.message}`, m, { contextInfo, quoted: m });
+    if (!json.data || json.data.length === 0) {
+      await m.react('❌');
+      return conn.reply(m.chat, `🌸 *Lo siento, ${name}, no encontré nada bajo ese nombre.*`, m);
     }
-}
 
-handler.help = ['animeinfo <url>'];
-handler.command = ['animeinfo', 'animei'];
+    const anime = json.data[0];
+    const title = anime.title;
+    
+    // Traducción de la sinopsis al español
+    const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q=${encodeURIComponent(anime.synopsis || 'Sin descripción.')}`;
+    const trRes = await fetch(translateUrl);
+    const trJson = await trRes.json();
+    const synopsisEs = trJson[0][0][0];
+
+    // Link a la página principal sugerida
+    const linkPrincipal = `https://www.animelatinohd.com/`;
+
+    let caption = `🌸 *¡Aquí tienes la información, ${name}!* 🌸\n\n` +
+                  `🎌 *Título:* ${title}\n` +
+                  `⭐ *Puntuación:* ${anime.score || 'N/A'}\n` +
+                  `📺 *Estado:* ${anime.status}\n\n` +
+                  `📝 *Sinopsis:* ${synopsisEs.slice(0, 350)}...\n\n` +
+                  `🚀 *¿Dónde verlo?* \n` +
+                  `Puedes buscarlo directamente en **AnimeLatinoHD** para verlo doblado al español:\n` +
+                  `🔗 ${linkPrincipal}\n\n` +
+                  `> 💡 *Consejo de Eris:*  *Usa El Navegador Brave* Copia el nombre del anime y pégalo en el buscador de la página para ir a la segura.`;
+
+    await conn.sendMessage(m.chat, {
+        image: { url: anime.images.jpg.large_image_url },
+        caption: caption.trim(),
+        contextInfo: {
+            mentionedJid: [m.sender],
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid,
+                newsletterName,
+                serverMessageId: -1
+            },
+            externalAdReply: {
+                title: `🌸 ERIS - ANIME FINDER 🌸`,
+                body: `Servicio de búsqueda para: ${name}`,
+                thumbnail: thumb,
+                mediaType: 1,
+                renderLargerThumbnail: false, 
+                sourceUrl: redes
+            }
+        }
+      }, { quoted: m });
+
+    await m.react('✅');
+
+  } catch (e) {
+    console.error(e);
+    await m.react('❌');
+    conn.reply(m.chat, `🌸 *Ups...* Hubo un problema con la base de datos de anime.`, m);
+  }
+};
+
+handler.help = ['animesearch <nombre>'];
+handler.command = ['animesearch', 'animes'];
 handler.tags = ['buscadores'];
-
-// --- Ajustes de Limitación ---
-handler.group = true;    // Solo en grupos
-handler.premium = false; // Para todos
-handler.register = false;// No requiere registro
 
 export default handler;

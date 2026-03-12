@@ -1,4 +1,4 @@
-/* 🦈 BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM (FINAL EDITION) 🦈 */
+/* 🦈 BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM (CLEAN ICON EDITION) 🦈 */
 
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import { readFileSync, unlinkSync, existsSync } from 'fs'
@@ -7,7 +7,9 @@ import { exec } from 'child_process'
 
 // --- CONFIGURACIÓN DE RUTAS ---
 const BASE_PATH = process.cwd();
+// Imagen para bienvenida (Banner Grande)
 const IMAGE_WELCOME = join(BASE_PATH, 'src', 'imagenes', 'perfil2.jpeg');
+// Imagen diferente para despedida (Cuadro Pequeño)
 const IMAGE_LEAVE_THUMB = join(BASE_PATH, 'src', 'imagenes', 'despedida.jpeg');
 const AUDIO_MP3 = join(BASE_PATH, 'src', 'audio', 'despedida.mp3');
 const AUDIO_OGG = join(BASE_PATH, 'src', 'audio', 'temp_despedida.ogg');
@@ -28,19 +30,18 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const groupName = groupMetadata.subject;
     const groupSize = participants.length;
 
-    // --- 3. EVENTO: BIENVENIDA ---
+    // --- 3. EVENTO: BIENVENIDA (ESTILO ÍCONO / AD-REPLY LIMPIO) ---
     const welcomeStubs = [WAMessageStubType.GROUP_PARTICIPANT_ADD, 27, 31];
     if (welcomeStubs.includes(m.messageStubType)) {
-        let img;
+        
+        let imgBuffer;
         try { 
-            img = readFileSync(IMAGE_WELCOME); 
+            imgBuffer = readFileSync(IMAGE_WELCOME); 
         } catch { 
-            img = { url: 'https://tinyurl.com/SinNombre-chan' }; 
+            imgBuffer = Buffer.alloc(0);
         }
 
-        const welcomeText = `
-> ꒰🦈꒱ ¡Oh! Un Nuevo Juguete Se Unió, A Divertirme.
-➥ Bienvenida/o A *${groupName}*
+        const welcomeText = `> ꒰🦈꒱ ¡Oh! Un Nuevo Juguete Se Unió, A Divertirme.
 
 Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un Integrante Más.
 
@@ -50,35 +51,38 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
 > ꒰💡꒱ ¿Necesitas Un Manual De Instrucciones? Usa .help`.trim();
 
         await conn.sendMessage(m.chat, { 
-            image: img, 
-            caption: welcomeText, 
+            text: welcomeText, 
             mentions: [jid],
             contextInfo: { 
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: { 
                     newsletterJid: '120363407502496951@newsletter', 
                     newsletterName: '✨ Eris-MD Oficial' 
-                } 
+                },
+                externalAdReply: {
+                    title: `¡Bienvenido/a a ${groupName}!`,
+                    body: `Usuario: ${pushName}`,
+                    thumbnail: imgBuffer, 
+                    mediaType: 1,
+                    renderLargerThumbnail: true // true = Banner grande para la bienvenida
+                }
             } 
-        }, { quoted: m });
+        });
         return true;
     }
 
     // --- 4. EVENTO: DESPEDIDA ---
     const leaveStubs = [WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE, 32];
     if (leaveStubs.includes(m.messageStubType)) {
-        
-        const byeText = `
-> ⊰🦈⊱ Oh, Se Fue. Pff, Que Pérdida De Tiempo Fue Esa. 
+
+        const byeText = `> ⊰🦈⊱ Oh, Se Fue. Pff, Que Pérdida De Tiempo Fue Esa. 
 
 ➯ Que Bueno Que Te Fuiste, Se Le Dará Tu Lugar A Otra Persona Que Si Lo Valore.
 
 > ⊰🦈⊱ Y Eso Es Todo Por Mi Parte, No Me Molestes.`.trim();
 
-        // Enviar el texto primero
-        await conn.sendMessage(m.chat, { text: byeText, mentions: [jid] }, { quoted: m });
+        await conn.sendMessage(m.chat, { text: byeText, mentions: [jid] });
 
-        // Intentar enviar el audio con miniatura local
         if (existsSync(AUDIO_MP3)) {
             try {
                 await new Promise((resolve, reject) => {
@@ -87,9 +91,11 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
                     });
                 });
 
-                const audioBuffer = readFileSync(AUDIO_OGG);
                 let thumbBuffer;
-                try { thumbBuffer = readFileSync(IMAGE_LEAVE_THUMB); } catch { thumbBuffer = null; }
+                // Aquí usamos la imagen de despedida (despedida.jpeg)
+                try { thumbBuffer = readFileSync(IMAGE_LEAVE_THUMB); } catch { thumbBuffer = Buffer.alloc(0); }
+
+                const audioBuffer = readFileSync(AUDIO_OGG);
 
                 await conn.sendMessage(m.chat, {
                     audio: audioBuffer,
@@ -100,13 +106,13 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
                         externalAdReply: {
                             title: 'Despedida De Un Guerrero | Eris-MD',
                             body: `${pushName} Se Fue ALV 😂`,
-                            sourceUrl: 'https://github.com/SinNombre-mx/Eris-MD',
                             thumbnail: thumbBuffer, 
                             mediaType: 1,
+                            renderLargerThumbnail: false, // false = Cuadro pequeño al lado del audio
                             showAdAttribution: true
                         }
                     }
-                }, { mentions: [jid] });
+                });
 
                 if (existsSync(AUDIO_OGG)) unlinkSync(AUDIO_OGG);
             } catch (e) {
