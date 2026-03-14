@@ -28,7 +28,7 @@ const handler = async (m, { conn, isOwner }) => {
     try { m.react && m.react(global?.rwait || '⏳') } catch {}
 
     // Ajustado para que lea la carpeta que configuramos en index.js
-    const sessionsFolder = global.Ellensessions || 'session'
+    const sessionsFolder = global.ErisSessions || 'session'
     const sessionPath = path.join(process.cwd(), sessionsFolder)
 
     const muptime = formatUptime(process.uptime())

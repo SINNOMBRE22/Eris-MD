@@ -23,6 +23,7 @@ global.suittag = ['5217971532324']
 // Sólo aplica para opción 2 (ser bot con código de texto de 8 dígitos)
 global.botNumber = '' //Ejemplo: 573218138672
 
+/*
 // --- Sesiones: la carpeta de sesiones debe ser global.ErisSessions ---
 global.ErisSessions = 'ErisSessions' // obligatorio
 // Aliases de compatibilidad eliminados (no mantener Ellen/Llees/Skidy)
@@ -39,6 +40,21 @@ global.botname = global.namebot
 global.ErisSessions = global.ErisSessions
 global.jadi = 'ErisJadiBots'      // carpeta de sub-bots
 global.EllenJadibts = false       // legacy var eliminada en la práctica, se mantiene false
+*/
+
+// --- Sesiones ---
+global.ErisSessions = 'sesionEris' // O el nombre que quieras para la carpeta
+
+// --- Info visible del bot ---
+global.libreria = 'Baileys'
+global.baileys = 'V 6.7.16'
+global.languaje = 'Español'
+global.vs = '2.2.0'
+global.nameqr = 'eris-md'
+global.namebot = 'Eris Bot'
+global.botname = global.namebot
+global.jadi = 'ErisJadiBots'      
+global.ErisJadibts = false       // Cambiamos EllenJadibts por ErisJadibts
 
 // --- Contact card ---
 global.fkontak = {
