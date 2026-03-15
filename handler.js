@@ -69,6 +69,9 @@ if (!universalWords.includes(firstWord) && this?.user?.jid !== chat.primaryBot) 
                 sender = participantInfo.jid; 
             }
         }
+               // Ignorar los mensajes fantasma de WhatsApp Web/PC para evitar duplicados
+        if (sender.endsWith('@lid')) return;
+
 
         m.exp = 0
         m.coin = false
@@ -185,7 +188,8 @@ if (!universalWords.includes(firstWord) && this?.user?.jid !== chat.primaryBot) 
         const isAdmin = isRAdmin || user?.admin == "admin" || false
         const isBotAdmin = bot?.admin || false
 
-        const senderNum = sender.split('@')[0];
+//        const senderNum = sender.split('@')[0];
+        const senderNum = sender.split('@')[0].split(':')[0];
         const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '')).includes(senderNum);
         const isOwner = isROwner || m.fromMe
 

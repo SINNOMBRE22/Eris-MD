@@ -1,14 +1,14 @@
-/* ERIS-MD ANIME INTERACTIVE - FULL VERSION */
+/* ERIS-MD ANIME INTERACTIVE - MENTIONS FIX */
 
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, command }) => {
-    // Identificar a quién va dirigida la acción
+    // 1. Identificar a quién va dirigida la acción
     let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : m.sender
-    
-    // Obtener nombres de forma segura
-    let nameWho = await conn.getName(who)
-    let nameFrom = await conn.getName(m.sender)
+
+    // 2. Extracción infalible usando formato de Mención
+    let nameFrom = `@${m.sender.split('@')[0]}`
+    let nameWho = who === m.sender ? "alguien" : `@${who.split('@')[0]}`
 
     const apiKey = "causa-ee5ee31dcfc79da4"
     const isNsfw = command === 'waifuh'
@@ -16,41 +16,40 @@ let handler = async (m, { conn, command }) => {
 
     // Mapa completo de interacciones y sus textos
     const interactions = {
-        'waifu': { action: 'waifu', str: `🌸 Waifu para *${nameFrom}*` },
-        'waifuh': { action: 'waifu', str: `🔥 Waifu H para *${nameFrom}*` },
-        'neko': { action: 'neko', str: `🐾 Neko para *${nameFrom}*` },
-        'shinobu': { action: 'shinobu', str: `🦋 Shinobu para *${nameFrom}*` },
-        'megumin': { action: 'megumin', str: `💥 Megumin para *${nameFrom}*` },
-        'bully': { action: 'bully', str: `🌸 *${nameFrom}* le hace bullying a *${nameWho}*` },
-        'cuddle': { action: 'cuddle', str: `🌸 *${nameFrom}* se acurruca con *${nameWho}*` },
-        'cry': { action: 'cry', str: `🌸 *${nameFrom}* está llorando por culpa de *${nameWho}* 😿` },
-        'hug': { action: 'hug', str: `🌸 *${nameFrom}* le dio un abrazo a *${nameWho}* 🤗` },
-        'awoo': { action: 'awoo', str: `🌸 *${nameFrom}* dice: ¡Awoooo! 🐺` },
-        'kiss': { action: 'kiss', str: `💋 *${nameFrom}* besó a *${nameWho}*` },
-        'lick': { action: 'lick', str: `🌸 *${nameFrom}* lamió a *${nameWho}*` },
-        'pat': { action: 'pat', str: `👋 *${nameFrom}* acaricia a *${nameWho}*` },
-        'smug': { action: 'smug', str: `😏 *${nameFrom}* se puso presumido/a` },
-        'bonk': { action: 'bonk', str: `🔨 *${nameFrom}* le dio un bonk a *${nameWho}*` },
-        'yeet': { action: 'yeet', str: `🌸 *${nameFrom}* mandó a volar a *${nameWho}* 🚀` },
-        'blush': { action: 'blush', str: `😳 *${nameFrom}* se sonrojó` },
-        'smile': { action: 'smile', str: `🌸 *${nameFrom}* le sonrió a *${nameWho}*` },
-        'wave': { action: 'wave', str: `👋 *${nameFrom}* saluda a *${nameWho}*` },
-        'highfive': { action: 'highfive', str: `🖐️ *${nameFrom}* chocó los cinco con *${nameWho}*` },
-        'handhold': { action: 'handhold', str: `🤝 *${nameFrom}* tomó la mano de *${nameWho}*` },
-        'nom': { action: 'nom', str: `🍱 *${nameFrom}* está comiendo...` },
-        'bite': { action: 'bite', str: `🦷 *${nameFrom}* mordió a *${nameWho}*` },
-        'glomp': { action: 'glomp', str: `🌸 *${nameFrom}* se lanzó sobre *${nameWho}*` },
-        'slap': { action: 'slap', str: `🖐️ *${nameFrom}* le dio una bofetada a *${nameWho}*` },
-        'kill': { action: 'kill', str: `💀 *${nameFrom}* mató a *${nameWho}*` },
-        'kick': { action: 'kick', str: `🦵 *${nameFrom}* le metió una patada a *${nameWho}*` },
-        'happy': { action: 'happy', str: `✨ *${nameFrom}* está muy feliz` },
-        'wink': { action: 'wink', str: `😉 *${nameFrom}* le guiñó el ojo a *${nameWho}*` },
-        'poke': { action: 'poke', str: `🌸 *${nameFrom}* picó a *${nameWho}*` },
-        'dance': { action: 'dance', str: `💃 *${nameFrom}* baila con *${nameWho}*` },
-        'cringe': { action: 'cringe', str: `😬 *${nameFrom}* siente cringe...` }
+        'waifu': { action: 'waifu', str: `🌸 Waifu para ${nameFrom}` },
+        'waifuh': { action: 'waifu', str: `🔥 Waifu H para ${nameFrom}` },
+        'neko': { action: 'neko', str: `🐾 Neko para ${nameFrom}` },
+        'shinobu': { action: 'shinobu', str: `🦋 Shinobu para ${nameFrom}` },
+        'megumin': { action: 'megumin', str: `💥 Megumin para ${nameFrom}` },
+        'bully': { action: 'bully', str: `🌸 ${nameFrom} le hace bullying a ${nameWho}` },
+        'cuddle': { action: 'cuddle', str: `🌸 ${nameFrom} se acurruca con ${nameWho}` },
+        'cry': { action: 'cry', str: `🌸 ${nameFrom} está llorando por culpa de ${nameWho} 😿` },
+        'hug': { action: 'hug', str: `🌸 ${nameFrom} le dio un abrazo a ${nameWho} 🤗` },
+        'awoo': { action: 'awoo', str: `🌸 ${nameFrom} dice: ¡Awoooo! 🐺` },
+        'kiss': { action: 'kiss', str: `💋 ${nameFrom} besó a ${nameWho}` },
+        'lick': { action: 'lick', str: `🌸 ${nameFrom} lamió a ${nameWho}` },
+        'pat': { action: 'pat', str: `👋 ${nameFrom} acaricia a ${nameWho}` },
+        'smug': { action: 'smug', str: `😏 ${nameFrom} se puso presumido/a` },
+        'bonk': { action: 'bonk', str: `🔨 ${nameFrom} le dio un bonk a ${nameWho}` },
+        'yeet': { action: 'yeet', str: `🌸 ${nameFrom} mandó a volar a ${nameWho} 🚀` },
+        'blush': { action: 'blush', str: `😳 ${nameFrom} se sonrojó` },
+        'smile': { action: 'smile', str: `🌸 ${nameFrom} le sonrió a ${nameWho}` },
+        'wave': { action: 'wave', str: `👋 ${nameFrom} saluda a ${nameWho}` },
+        'highfive': { action: 'highfive', str: `🖐️ ${nameFrom} chocó los cinco con ${nameWho}` },
+        'handhold': { action: 'handhold', str: `🤝 ${nameFrom} tomó la mano de ${nameWho}` },
+        'nom': { action: 'nom', str: `🍱 ${nameFrom} está comiendo...` },
+        'bite': { action: 'bite', str: `🦷 ${nameFrom} mordió a ${nameWho}` },
+        'glomp': { action: 'glomp', str: `🌸 ${nameFrom} se lanzó sobre ${nameWho}` },
+        'slap': { action: 'slap', str: `🖐️ ${nameFrom} le dio una bofetada a ${nameWho}` },
+        'kill': { action: 'kill', str: `💀 ${nameFrom} mató a ${nameWho}` },
+        'kick': { action: 'kick', str: `🦵 ${nameFrom} le metió una patada a ${nameWho}` },
+        'happy': { action: 'happy', str: `✨ ${nameFrom} está muy feliz` },
+        'wink': { action: 'wink', str: `😉 ${nameFrom} le guiñó el ojo a ${nameWho}` },
+        'poke': { action: 'poke', str: `🌸 ${nameFrom} picó a ${nameWho}` },
+        'dance': { action: 'dance', str: `💃 ${nameFrom} baila con ${nameWho}` },
+        'cringe': { action: 'cringe', str: `😬 ${nameFrom} siente cringe...` }
     }
 
-    // Aliases para comandos en español
     const aliases = {
         'abrazar': 'hug', 'beso': 'kiss', 'muak': 'kiss', 'lamer': 'lick', 'palmada': 'bonk', 
         'palmadita': 'pat', 'picar': 'poke', 'bailar': 'dance', 'feliz': 'happy', 
@@ -60,9 +59,14 @@ let handler = async (m, { conn, command }) => {
         'presumir': 'smug', 'acurrucarse': 'cuddle', 'llorar': 'cry', 'bullying': 'bully'
     }
 
-    const cmd = aliases[command] || command
-    const interaction = interactions[cmd]
+    let cmd = aliases[command] || command
+    let interactionName = cmd
+    
+    if (!interactions[interactionName]) {
+        interactionName = Object.keys(interactions).find(key => interactions[key].action === cmd) || cmd
+    }
 
+    const interaction = interactions[interactionName]
     if (!interaction) return
 
     try {
@@ -74,8 +78,14 @@ let handler = async (m, { conn, command }) => {
 
         const mediaUrl = json.data.url
         const mime = json.data.mimetype
+        
         const resMedia = await fetch(mediaUrl)
-        const buffer = await resMedia.buffer()
+        const arrayBuffer = await resMedia.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+
+        // Lista de usuarios a mencionar (Tú y la víctima)
+        let menciones = [m.sender]
+        if (who !== m.sender) menciones.push(who)
 
         if (mime.includes('video') || mime.includes('gif')) {
             await conn.sendMessage(m.chat, { 
@@ -83,21 +93,21 @@ let handler = async (m, { conn, command }) => {
                 caption: interaction.str, 
                 gifPlayback: true,
                 mimetype: 'video/mp4',
-                mentions: [who] 
+                mentions: menciones 
             }, { quoted: m })
         } else {
             await conn.sendMessage(m.chat, { 
                 image: buffer, 
                 caption: interaction.str, 
-                mentions: [who] 
+                mentions: menciones 
             }, { quoted: m })
         }
         await m.react('✅')
 
     } catch (e) {
-        console.error('Error en Anime Interaction:', e)
+        console.error('Error Anime Interaction:', e)
         await m.react('❌')
-        conn.reply(m.chat, '🌸 Error al procesar la interacción anime.', m)
+        conn.reply(m.chat, '🌸 *Error al cargar la interacción.*', m)
     }
 }
 
@@ -111,15 +121,7 @@ handler.help = [
     'presumir', 'acurrucarse', 'llorar', 'bullying'
 ]
 handler.tags = ['anime']
-handler.command = [
-    'waifu', 'waifuh', 'neko', 'shinobu', 'megumin', 'bully', 'cuddle', 'cry', 'hug', 
-    'awoo', 'kiss', 'lick', 'pat', 'smug', 'bonk', 'yeet', 'blush', 'smile', 'wave', 
-    'highfive', 'handhold', 'nom', 'bite', 'glomp', 'slap', 'kill', 'kick', 'happy', 
-    'wink', 'poke', 'dance', 'cringe', 'abrazar', 'beso', 'muak', 'lamer', 'palmada', 
-    'palmadita', 'picar', 'bailar', 'feliz', 'matar', 'patear', 'patada', 'bofetada', 
-    'comer', 'morder', 'mano', '5', 'ola', 'saludar', 'sonreir', 'sonrojarse', 
-    'presumir', 'acurrucarse', 'llorar', 'bullying'
-]
+handler.command = /^(waifu|waifuh|neko|shinobu|megumin|bully|cuddle|cry|hug|awoo|kiss|lick|pat|smug|bonk|yeet|blush|smile|wave|highfive|handhold|nom|bite|glomp|slap|kill|kick|happy|wink|poke|dance|cringe|abrazar|beso|muak|lamer|palmada|palmadita|picar|bailar|feliz|matar|patear|patada|bofetada|comer|morder|mano|5|ola|saludar|sonreir|sonrojarse|presumir|acurrucarse|llorar|bullying)$/i
 handler.group = true
 
 export default handler
