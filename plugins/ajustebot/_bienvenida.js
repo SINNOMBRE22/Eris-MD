@@ -1,59 +1,63 @@
-/* 🦈 BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM (CLEAN ICON EDITION) 🦈 */
+/* 🦈 BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM (PURIFICADOR DE IDs) 🦈 */
 
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import { readFileSync, unlinkSync, existsSync } from 'fs'
 import { join } from 'path'
 import { exec } from 'child_process'
 
-// --- CONFIGURACIÓN DE RUTAS ---
 const BASE_PATH = process.cwd();
-// Imagen para bienvenida (Banner Grande)
 const IMAGE_WELCOME = join(BASE_PATH, 'src', 'imagenes', 'perfil2.jpeg');
-// Imagen diferente para despedida (Cuadro Pequeño)
 const IMAGE_LEAVE_THUMB = join(BASE_PATH, 'src', 'imagenes', 'despedida.jpeg');
 const AUDIO_MP3 = join(BASE_PATH, 'src', 'audio', 'despedida.mp3');
 const AUDIO_OGG = join(BASE_PATH, 'src', 'audio', 'temp_despedida.ogg');
 
 export async function before(m, { conn, participants, groupMetadata }) {
-    // 1. VALIDACIONES INICIALES
     if (!m.messageStubType || !m.isGroup) return true;
 
-    // 2. REVISAR SI LA BIENVENIDA ESTÁ ACTIVADA EN LA BASE DE DATOS
     let chat = global.db.data.chats[m.chat];
     if (!chat?.welcome) return true; 
 
-    const userId = m.messageStubParameters?.[0];
-    if (!userId) return true;
+    // 1. Extraemos el usuario (Si no está en parámetros, lo sacamos del sender)
+    let rawUserId = m.messageStubParameters?.[0];
+    if (!rawUserId) rawUserId = m.sender;
+    if (!rawUserId) return true;
 
-    const jid = userId.includes('@') ? userId : `${userId}@s.whatsapp.net`;
-    const pushName = conn.getName(jid) || 'Recluta';
+    // 2. 🔥 EL PURIFICADOR DE PUERTOS 🔥 (La solución a los números falsos)
+    let jid = rawUserId;
+    if (jid.includes(':')) {
+        // Cortamos la basura del puerto (ej. 52123:15@... -> 52123@...)
+        jid = jid.split(':')[0] + '@s.whatsapp.net';
+    } else if (!jid.includes('@')) {
+        jid = jid + '@s.whatsapp.net';
+    }
+
+    const userNumber = jid.split('@')[0];
+    
+    // 3. Obtenemos el nombre correctamente
+    let pushName = await conn.getName(jid);
+    if (!pushName || pushName === jid) {
+        pushName = `+${userNumber}`;
+    }
+
     const groupName = groupMetadata.subject;
     const groupSize = participants.length;
 
-    // --- 3. EVENTO: BIENVENIDA (ESTILO ÍCONO / AD-REPLY LIMPIO) ---
+    // ==========================================================
+    // EVENTO: BIENVENIDA
+    // ==========================================================
     const welcomeStubs = [WAMessageStubType.GROUP_PARTICIPANT_ADD, 27, 31];
     if (welcomeStubs.includes(m.messageStubType)) {
-        
+
         let imgBuffer;
-        try { 
-            imgBuffer = readFileSync(IMAGE_WELCOME); 
-        } catch { 
-            imgBuffer = Buffer.alloc(0);
-        }
+        try { imgBuffer = readFileSync(IMAGE_WELCOME); } catch { imgBuffer = Buffer.alloc(0); }
 
-        const welcomeText = `> ꒰🦈꒱ ¡Oh! Un Nuevo Juguete Se Unió, A Divertirme.
-
-Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un Integrante Más.
-
-∫ 👥 *Miembros:* ${groupSize}
-∫ 🆔 *ID:* @${jid.split('@')[0]}
-
-> ꒰💡꒱ ¿Necesitas Un Manual De Instrucciones? Usa .help`.trim();
+        const welcomeText = `> ꒰🦈꒱ ¡Oh! Un Nuevo Juguete Se Unió, A Divertirme.\n\nEsperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un Integrante Más.\n\n∫ 👥 *Miembros:* ${groupSize}\n∫ 🆔 *ID:* @${userNumber}\n\n> ꒰💡꒱ ¿Necesitas Un Manual De Instrucciones? Usa .help`.trim();
 
         await conn.sendMessage(m.chat, { 
             text: welcomeText, 
-            mentions: [jid],
+            mentions: [jid], 
             contextInfo: { 
+                mentionedJid: [jid],
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: { 
                     newsletterJid: '120363407502496951@newsletter', 
@@ -64,24 +68,27 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
                     body: `Usuario: ${pushName}`,
                     thumbnail: imgBuffer, 
                     mediaType: 1,
-                    renderLargerThumbnail: true // true = Banner grande para la bienvenida
+                    renderLargerThumbnail: true
                 }
             } 
         });
         return true;
     }
 
-    // --- 4. EVENTO: DESPEDIDA ---
-    const leaveStubs = [WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE, 32];
+    // ==========================================================
+    // EVENTO: DESPEDIDA
+    // ==========================================================
+    // Se agregan los códigos 28 y 32 por seguridad en Baileys
+    const leaveStubs = [WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE, 28, 32];
     if (leaveStubs.includes(m.messageStubType)) {
 
-        const byeText = `> ⊰🦈⊱ Oh, Se Fue. Pff, Que Pérdida De Tiempo Fue Esa. 
+        const byeText = `> ⊰🦈⊱ Oh, Se Fue @${userNumber}. Pff, Que Pérdida De Tiempo Fue Esa.\n\n➯ Que Bueno Que Te Fuiste, Se Le Dará Tu Lugar A Otra Persona Que Si Lo Valore.\n\n> ⊰🦈⊱ Y Eso Es Todo Por Mi Parte, No Me Molestes.`.trim();
 
-➯ Que Bueno Que Te Fuiste, Se Le Dará Tu Lugar A Otra Persona Que Si Lo Valore.
-
-> ⊰🦈⊱ Y Eso Es Todo Por Mi Parte, No Me Molestes.`.trim();
-
-        await conn.sendMessage(m.chat, { text: byeText, mentions: [jid] });
+        await conn.sendMessage(m.chat, { 
+            text: byeText, 
+            mentions: [jid],
+            contextInfo: { mentionedJid: [jid] } 
+        });
 
         if (existsSync(AUDIO_MP3)) {
             try {
@@ -92,9 +99,7 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
                 });
 
                 let thumbBuffer;
-                // Aquí usamos la imagen de despedida (despedida.jpeg)
                 try { thumbBuffer = readFileSync(IMAGE_LEAVE_THUMB); } catch { thumbBuffer = Buffer.alloc(0); }
-
                 const audioBuffer = readFileSync(AUDIO_OGG);
 
                 await conn.sendMessage(m.chat, {
@@ -102,13 +107,13 @@ Esperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un I
                     mimetype: 'audio/ogg; codecs=opus',
                     ptt: true,
                     contextInfo: {
-                        mentionedJid: [jid],
+                        mentionedJid: [jid], 
                         externalAdReply: {
                             title: 'Despedida De Un Guerrero | Eris-MD',
-                            body: `${pushName} Se Fue ALV 😂`,
+                            body: `${pushName} (@${userNumber}) Se Fue ALV 😂`,
                             thumbnail: thumbBuffer, 
                             mediaType: 1,
-                            renderLargerThumbnail: false, // false = Cuadro pequeño al lado del audio
+                            renderLargerThumbnail: false, 
                             showAdAttribution: true
                         }
                     }
