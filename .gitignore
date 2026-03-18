@@ -1,9 +1,7 @@
 node_modules
-ErisSessions/
-ErisSessions
+sesionEris/
+sesionEris
 tmp
-session
 .npm
-.gitignore
-.git
-.src/database/database.json
+src/database/database.json
+.env
