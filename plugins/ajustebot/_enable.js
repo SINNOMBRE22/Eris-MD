@@ -218,8 +218,8 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
   conn.reply(m.chat, mensajeFinal, m);
 };
 
-handler.help = ['welcome', 'bienvenida', 'antiprivado', 'restrict', 'autolevelup', 'autosticker', 'antibot', 'autoaceptar', 'autorechazar', 'autoresponder', 'antisubbots', 'modoadmin', 'autoread', 'antiver', 'reaction', 'nsfw', 'antispam', 'antidelete', 'detect', 'antilink', 'antilink2', 'antitoxic', 'antitraba', 'antifake', 'audios']
-handler.tags = ['nable'];
+//handler.help = ['welcome', 'bienvenida', 'antiprivado', 'restrict', 'autolevelup', 'autosticker', 'antibot', 'autoaceptar', 'autorechazar', 'autoresponder', 'antisubbots', 'modoadmin', 'autoread', 'antiver', 'reaction', 'nsfw', 'antispam', 'antidelete', 'detect', 'antilink', 'antilink2', 'antitoxic', 'antitraba', 'antifake', 'audios']
+//handler.tags = ['nable'];
 
 // Regex actualizado con todos los disparadores
 handler.command = /^(on|off|enable|disable|activar|desactivar|welcome|bv|bienvenida|antiprivado|antipriv|antiprivate|restrict|restringir|autolevelup|autonivel|autosticker|antibot|antibots|autoaceptar|aceptarauto|autorechazar|rechazarauto|autoresponder|autorespond|antisubbots|antisub|antisubot|antibot2|modoadmin|soloadmin|autoread|autoleer|autover|antiver|antiocultar|antiviewonce|reaction|reaccion|emojis|nsfw|nsfwhot|nsfwhorny|antispam|antiSpam|antispamosos|antidelete|antieliminar|jadibotmd|modejadibot|subbots|detect|configuraciones|avisodegp|detect2|avisos|eventos|autosimi|simsimi|antilink|antilink2|antitoxic|antitoxicos|antitraba|antitrabas|antifake|antivirtuales|audios)$/i

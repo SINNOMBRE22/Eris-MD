@@ -90,6 +90,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 }
 
+handler.help = ["play"];
+handler.tags = ["descargas"];
 handler.command = ['play', 'musica'];
 export default handler;
 

@@ -66,7 +66,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 }
 
 handler.help = ['ado']
-handler.tags = ['owner', 'tools']
+handler.tags = ['owner']
 handler.command = ['ado', 'upload']
 handler.rowner = true
 

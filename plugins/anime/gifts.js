@@ -120,7 +120,7 @@ handler.help = [
     'comer', 'morder', 'mano', '5', 'ola', 'saludar', 'sonreir', 'sonrojarse', 
     'presumir', 'acurrucarse', 'llorar', 'bullying'
 ]
-handler.tags = ['anime']
+//handler.tags = ['anime']
 handler.command = /^(waifu|waifuh|neko|shinobu|megumin|bully|cuddle|cry|hug|awoo|kiss|lick|pat|smug|bonk|yeet|blush|smile|wave|highfive|handhold|nom|bite|glomp|slap|kill|kick|happy|wink|poke|dance|cringe|abrazar|beso|muak|lamer|palmada|palmadita|picar|bailar|feliz|matar|patear|patada|bofetada|comer|morder|mano|5|ola|saludar|sonreir|sonrojarse|presumir|acurrucarse|llorar|bullying)$/i
 handler.group = true
 
