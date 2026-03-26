@@ -1,29 +1,33 @@
+/* 🌸 CREADOR DE STICKERS - ERIS-MD EDITION 🌸 */
+
 import { sticker } from '../../lib/sticker.js';
 import uploadFile from '../../lib/uploadFile.js';
 import uploadImage from '../../lib/uploadImage.js';
 import { webp2png } from '../../lib/webp2mp4.js';
-const emoji = "🔥";
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   let stiker = false;
   try {
     let q = m.quoted ? m.quoted : m;
     let mime = (q.msg || q).mimetype || q.mediaType || '';
+    
+    // --- 1. PROCESAR MULTIMEDIA (IMAGEN/VIDEO) ---
     if (/webp|image|video/g.test(mime)) {
       if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
-        return m.reply(`${emoji2} ¡El video no puede durar más de 15 segundos!...`);
+        return m.reply(`> ꒰⚠️꒱ ¡El video es muy largo!\nNo puede durar más de 15 segundos. ✨`);
       }
+      
       let img = await q.download?.();
 
       if (!img) {
-        return conn.reply(m.chat, `${emoji} Por favor, envía una imagen o video para hacer un sticker.`, m);
+        return conn.reply(m.chat, `> ꒰🌸꒱ Responde a una imagen, video o GIF con *${usedPrefix + command}* para crear el sticker.`, m);
       }
 
       let out;
       try {
         const packstickers = global.db.data.users[m.sender];
-        const texto1 = packstickers?.text1 || `${global.packsticker}`;
-        const texto2 = packstickers?.text2 || `${global.packsticker2}`;
+        const texto1 = packstickers?.text1 || `${global.packsticker || 'Eris-MD'}`;
+        const texto2 = packstickers?.text2 || `${global.packsticker2 || 'Sticker'}`;
 
         stiker = await sticker(img, false, texto1, texto2);
       } catch (e) {
@@ -34,29 +38,37 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
           else if (/image/g.test(mime)) out = await uploadImage(img);
           else if (/video/g.test(mime)) out = await uploadFile(img);
           if (typeof out !== 'string') out = await uploadImage(img);
-          stiker = await sticker(false, out, global.packsticker, global.packsticker2);
+          
+          stiker = await sticker(false, out, global.packsticker || 'Eris-MD', global.packsticker2 || 'Sticker');
         }
       }
-    } else if (args[0]) {
+    } 
+    // --- 2. PROCESAR POR URL ---
+    else if (args[0]) {
       if (isUrl(args[0])) {
-        stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
+        stiker = await sticker(false, args[0], global.packsticker || 'Eris-MD', global.packsticker2 || 'Sticker');
       } else {
-        return m.reply(`${msm} El URL es incorrecto...`);
+        return m.reply(`> ꒰❌꒱ El enlace proporcionado no es válido o no contiene imagen.`);
       }
+    } 
+    // --- 3. USO INCORRECTO ---
+    else {
+        return conn.reply(m.chat, `> ꒰🌸꒱ Responde a una imagen, video o GIF con *${usedPrefix + command}* para crear el sticker.`, m);
     }
   } catch (e) {
     console.error(e);
     if (!stiker) stiker = e;
   } finally {
-    if (stiker) {
-      conn.sendFile(m.chat, stiker, 'sticker.webp', '', m);
+    // --- 4. ENVÍO FINAL ---
+    if (stiker && Buffer.isBuffer(stiker)) {
+      await conn.sendFile(m.chat, stiker, 'sticker.webp', '', m);
     } else {
-      return conn.reply(m.chat, `${emoji} Por favor, envía una imagen o video para hacer un sticker.`, m);
+      console.log('Fallo interno al crear el sticker.');
     }
   }
 };
 
-handler.help = ['stiker "img"'];
+handler.help = ['sticker'];
 handler.tags = ['sticker'];
 handler.command = ['s', 'sticker', 'stiker'];
 

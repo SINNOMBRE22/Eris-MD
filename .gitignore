@@ -1,7 +1,5 @@
 node_modules
 sesionEris/
 sesionEris
-tmp
-.npm
 src/database/database.json
 .env
