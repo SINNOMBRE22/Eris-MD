@@ -3,7 +3,7 @@
 export async function all(m) {
     // 1. Filtros de seguridad: No estados, no mensajes propios, no si el bot está baneado
     if (!m.chat.endsWith('.net') || m.fromMe || m.key.remoteJid.endsWith('status@broadcast')) return
-    
+
     // 2. Verificar base de datos de chats y usuarios
     let chat = global.db.data.chats[m.chat]
     let user = global.db.data.users[m.sender]
