@@ -1,95 +1,51 @@
-/* COMANDO: PROMOVER ADMIN - ERIS-MD */
-
 import fs from 'fs'
 import path from 'path'
 
-var handler = async (m, { conn, text, groupMetadata, command }) => {
-    let thumb
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+    // Detectar al usuario a promocionar
+    let who = m.mentionedJid?.[0] || m.quoted?.sender || (text ? text.replace(/[+@\s-]/g, '') + '@s.whatsapp.net' : false)
+    if (!who) return m.reply(`> ꒰🌸꒱ *USO CORRECTO*\nEtiqueta al usuario o responde a su mensaje.\n\n*Ejemplo:*\n${usedPrefix + command} @user`)
+
+    // Evitar promocionar al bot o al creador
+    if (who === conn.user.jid) return m.reply(`> ꒰🌸꒱ No puedo promoverme a mí mismo. ✨`)
+    const isOwner = global.owner?.some(owner => who.includes(owner[0]))
+    if (isOwner) return m.reply(`> ꒰🌸꒱ No puedo promover a mi creador. ✨`)
+
     try {
-        const imgPath = path.join(process.cwd(), 'src/imagenes/perfil2.jpeg')
-        thumb = fs.readFileSync(imgPath)
-    } catch {
-        thumb = Buffer.alloc(0)
-    }
+        // Obtener info del grupo
+        const groupMetadata = await conn.groupMetadata(m.chat)
+        const participant = groupMetadata.participants.find(p => p.id === who)
 
-    // 1. OBTENER USUARIO
-    let user
-    const mentionedJid =
-        m.mentionedJid?.length > 0
-            ? m.mentionedJid
-            : m.message?.extendedTextMessage?.contextInfo?.mentionedJid || []
+        // Evitar promocionar si ya es admin
+        if (participant?.admin === 'admin' || participant?.admin === 'superadmin') {
+            return m.reply(`> ꒰🌸꒱ El usuario ya es administrador.`)
+        }
 
-    if (mentionedJid.length > 0) {
-        user = mentionedJid[0]
-    } else if (m.quoted?.sender) {
-        user = m.quoted.sender
-    } else if (text) {
-        let target = text.replace(/[^0-9]/g, '')
-        if (target.length >= 10) user = target + '@s.whatsapp.net'
-    }
+        // Promocionar al usuario
+        await conn.groupParticipantsUpdate(m.chat, [who], 'promote')
 
-    if (!user) {
-        return m.reply('✦ *ERROR DE PARAMETROS*\n\n✧ Accion:\n➤ Debes mencionar (@), citar o escribir el numero del usuario para promoverlo.')
-    }
+        // Mensaje final con mención real
+        const caption = `> ꒰🌸꒱ *ADMINISTRACIÓN ACTUALIZADA*\n\n➥ @${who.split('@')[0]} ahora es administrador.\n> ✧ Promovido por: @${m.sender.split('@')[0]} ✨`
 
-    // 2. VALIDACIONES
-    const ownerGroup = groupMetadata.owner || m.chat.split('-')[0] + '@s.whatsapp.net'
-    const botOwner = (global.owner && global.owner[0] && global.owner[0][0]) ? global.owner[0][0] + '@s.whatsapp.net' : ''
-
-    if ([conn.user.jid, ownerGroup, botOwner].includes(user)) {
-        return m.reply('✦ *AVISO DEL SISTEMA*\n\n✧ Estado:\n➤ No tengo permitido promover a este usuario (Bot/Owner).')
-    }
-
-    // 3. EJECUTAR PROMOCION
-    try {
-        await conn.groupParticipantsUpdate(m.chat, [user], 'promote')
-
-        const textMessage = [
-            '✦ *PROMOCION DE ADMIN*',
-            '',
-            '✧ Grupo:',
-            '➤ ' + groupMetadata.subject,
-            '',
-            '✧ Usuario Promovido:',
-            '➤ @' + user.split('@')[0],
-            '',
-            '✧ Estado:',
-            '➤ Designado como Administrador.',
-            '',
-            '⚠️ Nota: El nuevo admin ahora tiene permisos de gestion.'
-        ].join('\n')
-
-        await conn.sendMessage(m.chat, {
-            text: textMessage,
-            mentions: [user],
-            contextInfo: {
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363407502496951@newsletter',
-                    newsletterName: 'Eris-MD Oficial'
-                },
-                externalAdReply: {
-                    title: 'ERIS-MD: SISTEMA ADMIN',
-                    body: 'Accion: ' + command.toUpperCase(),
-                    thumbnail: thumb,
-                    mediaType: 1,
-                    renderLargerThumbnail: true
-                }
-            }
-        }, { quoted: m })
+        await conn.sendMessage(
+            m.chat,
+            {
+                text: caption,
+                mentions: [who, m.sender]
+            },
+            { quoted: m }
+        )
 
     } catch (e) {
-        console.error('Error en Promote:', e)
-        m.reply('✦ *ERROR CRITICO*\n\n✧ Detalles:\n➤ No se pudo completar la promocion. Asegurate de que soy administrador.')
+        await m.reply(`> ꒰❌꒱ No pude promover. Asegúrate de que el usuario no sea administrador y que el Bot tenga permisos.`)
     }
 }
 
-handler.help = ['promote']
-handler.tags = ['admin']
+handler.help = ['promote @user']
+handler.tags = ['grupos', 'admins']
 handler.command = ['promote', 'promover', 'darpija']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
 
 export default handler
-

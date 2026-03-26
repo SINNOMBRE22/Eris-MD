@@ -181,8 +181,9 @@ if (!universalWords.includes(firstWord) && this?.user?.jid !== chat.primaryBot) 
         const groupMetadata = m.isGroup ? { ...(this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}), ...(((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({ ...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
         const participants = ((m.isGroup ? groupMetadata.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
         
-        const user = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) === sender) : {}) || {}
-        const bot = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) == this.user.jid) : {}) || {}
+//        const user = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) === sender) : {}) || {}
+     const user = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) === sender || this.decodeJid(u.lid || '') === sender || u.jid?.split('@')[0] === sender.split('@')[0]) : {}) || {}  
+      const bot = (m.isGroup ? participants.find((u) => this.decodeJid(u.jid) == this.user.jid) : {}) || {}
         
         const isRAdmin = user?.admin == "superadmin" || false
         const isAdmin = isRAdmin || user?.admin == "admin" || false

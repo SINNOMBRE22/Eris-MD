@@ -23,7 +23,7 @@ let handler = async (m, { conn, text }) => {
   });
 };
 
-handler.help = ['exec <comando>'];
+handler.help = ['ejecutar'];
 handler.tags = ['owner'];
 handler.command = ['ejecutar'];
 handler.owner = true;

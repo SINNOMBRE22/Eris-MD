@@ -169,7 +169,7 @@ Faltan ${restantes}`
 
 // config
 handler.help = ['sorteo2']
-handler.tags = ['eventos']
+handler.tags = ['grupos']
 handler.command = ['sorteo2', 'unirme']
 handler.group = true
 

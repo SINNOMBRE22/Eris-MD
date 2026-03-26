@@ -80,7 +80,7 @@ _*✦ Nota: Puedes Activar Una Opción Usando: .activar <función> (Ejemplo: .ac
 };
 
 handler.help = ['config'];
-handler.tags = ['grupo'];
+handler.tags = ['grupos'];
 handler.command = ['config', 'opciones', 'configuracion'];
 handler.group = true;
 
