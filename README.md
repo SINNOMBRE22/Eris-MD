@@ -20,7 +20,7 @@
 ### 1️⃣ Preparar Entorno (Node.js v24 & FFmpeg)
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 24 && nvm use 24 && nvm alias default 24 && sudo apt update && sudo apt install ffmpeg -y
-` ` `
+```
 
 ### 2️⃣ Clonar y Preparar Bot
 ` ` `bash
@@ -43,18 +43,6 @@ global.packname = 'Eris-MD'
 global.author = 'SINNOMBRE22 🌸'
 global.prefix = ['/']
 ` ` `
-
----
-
-## 🎒 Categorías de Comandos
-
-| Categoría | Descripción |
-|---|---|
-| 🏯 Grupo | Administración, antilink y gestión de grupos. |
-| 🌸 Anime | Waifus, fotos y búsqueda de series anime. |
-| 🎮 Juegos | Minijuegos interactivos (RPG, Trivia, etc). |
-| 🛠️ Tools | Creación de stickers y utilidades varias. |
-| 📥 Descargas | YouTube, TikTok, Instagram y Facebook. |
 
 ---
 
