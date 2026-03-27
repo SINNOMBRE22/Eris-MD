@@ -23,26 +23,26 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash 
 ```
 
 ### 2️⃣ Clonar y Preparar Bot
-` ` `bash
+```bash
 git clone https://github.com/SINNOMBRE22/Eris-MD.git && cd Eris-MD && npm install && mkdir -p tmp && chmod 777 tmp
-` ` `
+```
 
 ### 3️⃣ Iniciar 24/7 con PM2
-` ` `bash
+```bash
 chmod +x pm2-bot.sh && bash pm2-bot.sh
-` ` `
+```
 
 ---
 
 ## ⚙️ Configuración (`config.js`)
-` ` `js
+```js
 global.owner = [
   ['525629885039', 'SINNOMBRE22 💖', true],
 ]
 global.packname = 'Eris-MD'
 global.author = 'SINNOMBRE22 🌸'
 global.prefix = ['/']
-` ` `
+```
 
 ---
 
