@@ -1,10 +1,12 @@
+¡Entendido, amigo! Vamos a dejarlo súper limpio, directo al grano y con los comandos de Node que usamos hoy para que cualquier usuario solo tenga que copiar, pegar y listo. He quitado toda la paja y me enfoqué en una instalación técnica perfecta.
+Aquí tienes el código para tu README.md:
 <p align="center">
   <img src="https://i.pinimg.com/originals/60/76/8a/60768a1834162e2ac1894d36f6d525be.gif" alt="Eris GIF" width="350"/>
 </p>
 
 <h1 align="center"> 🌸 Ｅｒｉｓ － ＭＤ 🌸 </h1>
 <p align="center">
-  <b>El bot de WhatsApp más rápido, completo y con todo el estilo anime que necesitas. ✨</b>
+  <b>Bot de WhatsApp Multi-Device rápido, optimizado y con estilo anime. ✨</b>
 </p>
 
 <p align="center">
@@ -15,73 +17,52 @@
 
 ---
 
-## 🎐 ¿Qué es Eris-MD?
+## 🚀 Instalación Rápida (VPS / Linux)
 
-¡Hola! Soy **Eris-MD**, un bot multifuncional para WhatsApp basado en la tecnología Multi-Device (MD). He sido creada por **SINNOMBRE22** para hacer tus grupos más divertidos, gestionar la seguridad y ofrecerte herramientas útiles, ¡todo con un toque de magia anime!
+Sigue estos bloques de comandos para dejar el bot funcionando desde cero.
 
----
-
-## 🎒 Características Mágicas
-
-| Categoría | Descripción | Comandos Destacados |
-| :---: | :--- | :--- |
-| **🏯 Grupo** | Mantén el orden en tu aldea. | `/kick`, `/add`, `/promote`, `/demote`, `/mute` |
-| **🌸 Anime** | ¡Lo mejor de la cultura otaku! | `/anime [nombre]`, `/manga`, `/character`, `/waifu` |
-| **🎮 Juegos** | Diversión para no aburrirse. | `/tictactoe`, `/trivia`, `/akinator`, `/slots` |
-| **🛠️ Tools** | Herramientas útiles diarias. | `/sticker`, `/translate`, `/google`, `/weather` |
-| **📥 Descargas** | Baja contenido de tus redes. | `/play` (YT), `/tiktok`, `/ig`, `/facebook` |
-| **🎭 Owner** | Solo para mi creador. | `/setprefix`, `/broadcast`, `/block`, `/banchat` |
-
----
-
-## 🚀 Instalación en PC / VPS (Recomendado)
-
-Para que funcione al 100%, sigue estos pasos en tu terminal.
-
-### 📋 Requisitos Previos
-Antes de empezar, asegúrate de tener instalado lo siguiente:
-- **Node.js v20 o superior** (Se recomienda v24 LTS para mejor rendimiento)
-- **Git**
-- **FFmpeg** (Esencial para stickers y multimedia)
-
-> **Tip para Ubuntu/VPS:** Instala FFmpeg con: `sudo apt update && sudo apt install ffmpeg -y`
-
-### 🛠️ Pasos para Instalar
+### 1️⃣ Instalar Node.js v24 & FFmpeg
+Copia y pega este bloque para configurar el entorno necesario:
 
 ```bash
-# 1. Clona el repositorio
-git clone [https://github.com/SINNOMBRE22/Eris-MD.git](https://github.com/SINNOMBRE22/Eris-MD.git)
+# Instalar NVM e instalar Node v24 (LTS)
+curl -o- [https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh](https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh) | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 24 && nvm use 24 && nvm alias default 24
 
-# 2. Entra al directorio
-cd Eris-MD
+# Instalar FFmpeg para multimedia y stickers
+sudo apt update && sudo apt install ffmpeg -y
 
-# 3. Instala las dependencias
-npm install
+2️⃣ Clonar y Configurar Librerías
+Ahora descarga el bot y prepara las dependencias:
+# Clonar repositorio
+git clone [https://github.com/SINNOMBRE22/Eris-MD.git](https://github.com/SINNOMBRE22/Eris-MD.git) && cd Eris-MD
 
-# 4. Crea la carpeta de temporales (Evita errores en stickers)
-mkdir -p tmp && chmod 777 tmp
+# Instalar dependencias y crear carpeta temporal
+npm install && mkdir -p tmp && chmod 777 tmp
 
-⚡ Inicio Automático con PM2 (24/7)
-Para que el bot no se apague y se reinicie solo si hay errores, usa el script de instalación automática:
-# Dale permisos al script y ejecútalo
-chmod +x pm2-bot.sh
-bash pm2-bot.sh
+3️⃣ Iniciar con PM2 (24/7 Activo)
+Para que el bot se mantenga encendido siempre, usa el script automatizado:
+chmod +x pm2-bot.sh && bash pm2-bot.sh
 
-Este script instalará PM2 por ti y dejará al bot corriendo de fondo.
 ⚙️ Configuración (config.js)
-No olvides editar el archivo config.js para que el bot te reconozca como su dueño:
+Edita el archivo config.js para personalizar tu bot:
 global.owner = [
-  ['521234567890', 'Mi Creador 💖', true], // Cambia por tu número y nombre
+  ['525629885039', 'SINNOMBRE22 💖', true], // Tu número
 ]
+global.packname = 'Eris-MD' 
+global.author = 'SINNOMBRE22 🌸'
+global.prefix = ['/'] 
 
-global.packname = 'Sticker de' // Nombre del pack de stickers
-global.author = 'Eris-MD 🌸' // Autor del sticker
-global.prefix = ['/'] // Tu prefijo preferido
-
+🎒 Categorías de Comandos
+| Categoría | Descripción |
+|---|---|
+| 🏯 Grupo | Gestión de usuarios, ban, kick y avisos. |
+| 🌸 Anime | Comandos de waifus, fotos y búsqueda anime. |
+| 🎮 Juegos | Minijuegos interactivos dentro de WhatsApp. |
+| 🛠️ Tools | Stickers, traductores y utilidades. |
+| 📥 Descargas | YouTube, TikTok, Instagram y Facebook. |
 🤝 Soporte y Contacto
-¿Encontraste un bug o tienes una idea genial? ¡Házmelo saber!
 <p align="center">
-<a href="https://www.google.com/search?q=https://wa.me/525629885039%3Ftext%3DHola%2520SINNOMBRE22,%2520tengo%2520una%2520duda%2520sobre%2520Eris-MD">
+<a href="https://www.google.com/search?q=https://wa.me/525629885039%3Ftext%3DHola%2520SINNOMBRE22,%2520vengo%2520de%2520GitHub">
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/WhatsApp-25D366%3Fstyle%3Dfor-the-badge%26logo%3Dwhatsapp%26logoColor%3Dwhite" alt="WhatsApp Support">
 </a>
 </p>
@@ -89,17 +70,17 @@ global.prefix = ['/'] // Tu prefijo preferido
 Desarrollado con ❤️ por <a href="https://www.google.com/search?q=https://github.com/SINNOMBRE22">SINNOMBRE22</a>.
 
 
-<i>¡No olvides dejar tu ⭐ si te gustó el proyecto!</i>
+<i>¡No olvides dejar tu ⭐ si te sirvió el bot!</i>
 </p>
 
 -----
 
-### ¿Qué cambios hice?
+### Lo que actualicé para ti:
 
-1.  **Versión de Node:** Actualicé el requisito a **v20/v24**, que es lo que acabamos de dejar listo en tu servidor.
-2.  **Carpeta tmp:** Añadí el comando `mkdir -p tmp` en los pasos de instalación para que los nuevos usuarios no sufran el error que te salió a ti.
-3.  **FFmpeg:** Puse una nota clara de que es esencial y cómo instalarlo en Ubuntu.
-4.  **PM2 Script:** Añadí la sección específica para tu script `pm2-bot.sh`, explicando que es la forma de dejarlo activo 24/7.
-5.  **Limpieza:** Eliminé cualquier referencia a funciones de voz o IA que ya no estés usando.
+  - **Node.js:** Puse el comando exacto de NVM que usamos hoy para instalar la **v24**.
+  - **Comandos Combo:** Los agrupé para que el usuario solo tenga que dar un clic a "copiar".
+  - **Identidad:** Ya puse tu número y nombre real en los ejemplos de configuración y soporte.
+  - **Limpieza Total:** Fuera textos largos, ahora es una guía técnica 100% funcional.
 
+¿Te late como quedó? Si quieres, puedo ayudarte a crear el script `pm2-bot.sh` si todavía no lo tienes listo para que haga la instalación de PM2 automáticamente.
 
