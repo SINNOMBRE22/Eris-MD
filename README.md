@@ -1,5 +1,4 @@
-¡Entendido, amigo! Vamos a dejarlo súper limpio, directo al grano y con los comandos de Node que usamos hoy para que cualquier usuario solo tenga que copiar, pegar y listo. He quitado toda la paja y me enfoqué en una instalación técnica perfecta.
-Aquí tienes el código para tu README.md:
+¡A la orden, amigo! Aquí tienes el código completamente limpio, en formato Markdown puro, listo para que lo pegues en tu README.md. He condensado todo en bloques de comandos "combo" para que tus usuarios solo tengan que copiar y pegar.
 <p align="center">
   <img src="https://i.pinimg.com/originals/60/76/8a/60768a1834162e2ac1894d36f6d525be.gif" alt="Eris GIF" width="350"/>
 </p>
@@ -19,34 +18,26 @@ Aquí tienes el código para tu README.md:
 
 ## 🚀 Instalación Rápida (VPS / Linux)
 
-Sigue estos bloques de comandos para dejar el bot funcionando desde cero.
+Copia y pega los siguientes bloques de comandos en tu terminal.
 
-### 1️⃣ Instalar Node.js v24 & FFmpeg
-Copia y pega este bloque para configurar el entorno necesario:
+### 1️⃣ Preparar Entorno (Node.js v24 & FFmpeg)
+Este comando instala el gestor de versiones, Node.js 24 y las librerías multimedia:
 
 ```bash
-# Instalar NVM e instalar Node v24 (LTS)
-curl -o- [https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh](https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh) | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 24 && nvm use 24 && nvm alias default 24
+curl -o- [https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh](https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh) | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 24 && nvm use 24 && nvm alias default 24 && sudo apt update && sudo apt install ffmpeg -y
 
-# Instalar FFmpeg para multimedia y stickers
-sudo apt update && sudo apt install ffmpeg -y
+2️⃣ Clonar y Preparar Bot
+Descarga el repositorio e instala todas las dependencias necesarias:
+git clone [https://github.com/SINNOMBRE22/Eris-MD.git](https://github.com/SINNOMBRE22/Eris-MD.git) && cd Eris-MD && npm install && mkdir -p tmp && chmod 777 tmp
 
-2️⃣ Clonar y Configurar Librerías
-Ahora descarga el bot y prepara las dependencias:
-# Clonar repositorio
-git clone [https://github.com/SINNOMBRE22/Eris-MD.git](https://github.com/SINNOMBRE22/Eris-MD.git) && cd Eris-MD
-
-# Instalar dependencias y crear carpeta temporal
-npm install && mkdir -p tmp && chmod 777 tmp
-
-3️⃣ Iniciar con PM2 (24/7 Activo)
-Para que el bot se mantenga encendido siempre, usa el script automatizado:
+3️⃣ Iniciar 24/7 con PM2
+Usa el script de auto-configuración para que el bot nunca se apague:
 chmod +x pm2-bot.sh && bash pm2-bot.sh
 
 ⚙️ Configuración (config.js)
-Edita el archivo config.js para personalizar tu bot:
+Edita el archivo de configuración para que el bot te reconozca como dueño:
 global.owner = [
-  ['525629885039', 'SINNOMBRE22 💖', true], // Tu número
+  ['525629885039', 'SINNOMBRE22 💖', true], 
 ]
 global.packname = 'Eris-MD' 
 global.author = 'SINNOMBRE22 🌸'
@@ -55,11 +46,11 @@ global.prefix = ['/']
 🎒 Categorías de Comandos
 | Categoría | Descripción |
 |---|---|
-| 🏯 Grupo | Gestión de usuarios, ban, kick y avisos. |
-| 🌸 Anime | Comandos de waifus, fotos y búsqueda anime. |
-| 🎮 Juegos | Minijuegos interactivos dentro de WhatsApp. |
-| 🛠️ Tools | Stickers, traductores y utilidades. |
-| 📥 Descargas | YouTube, TikTok, Instagram y Facebook. |
+| 🏯 Grupo | Administración, antilink, bienvenida y gestión. |
+| 🌸 Anime | Comandos de waifus, fotos y búsqueda de series. |
+| 🎮 Juegos | Minijuegos interactivos (RPG, Trivia, etc). |
+| 🛠️ Tools | Creación de stickers, traductor y utilidades. |
+| 📥 Descargas | Contenido de YouTube, TikTok, IG y FB. |
 🤝 Soporte y Contacto
 <p align="center">
 <a href="https://www.google.com/search?q=https://wa.me/525629885039%3Ftext%3DHola%2520SINNOMBRE22,%2520vengo%2520de%2520GitHub">
@@ -75,12 +66,5 @@ Desarrollado con ❤️ por <a href="https://www.google.com/search?q=https://git
 
 -----
 
-### Lo que actualicé para ti:
-
-  - **Node.js:** Puse el comando exacto de NVM que usamos hoy para instalar la **v24**.
-  - **Comandos Combo:** Los agrupé para que el usuario solo tenga que dar un clic a "copiar".
-  - **Identidad:** Ya puse tu número y nombre real en los ejemplos de configuración y soporte.
-  - **Limpieza Total:** Fuera textos largos, ahora es una guía técnica 100% funcional.
-
-¿Te late como quedó? Si quieres, puedo ayudarte a crear el script `pm2-bot.sh` si todavía no lo tienes listo para que haga la instalación de PM2 automáticamente.
+**¿Te ayudo a subirlo de una vez con el `git push` o prefieres editar algo más antes?**
 
