@@ -34,26 +34,20 @@
 
 ---
 
-## 🚀 Despliegue (Get Started!)
+## 🚀 Instalación en PC / VPS (Recomendado)
 
-Para invocarme, necesitas configurar el entorno. Elige tu método preferido:
+Para que funcione al 100%, sigue estos pasos en tu terminal.
 
-### ✅ 1. Despliegue en Heroku (Recomendado para 24/7)
+### 📋 Requisitos Previos
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+- **Node.js v20 o superior** (Se recomienda v24 LTS para mejor rendimiento)
+- **Git**
+- **FFmpeg** (Esencial para stickers y multimedia)
 
-Este es el método más fácil para principiantes. Solo haz clic en el botón de abajo (requiere cuenta de Heroku):
+> **Tip para Ubuntu/VPS:** Instala FFmpeg con: `sudo apt update && sudo apt install ffmpeg -y`
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/SINNOMBRE22/Eris-MD)
+### 🛠️ Pasos para Instalar
 
-### ✅ 2. Instalación Local (PC/VPS)
-
-Si prefieres tener el control total en tu máquina:
-
-**Requisitos:**
-- [Node.js v16+](https://nodejs.org/)
-- [Git](https://git-scm.com/)
-- [FFmpeg](https://ffmpeg.org/)
-
-**Pasos:**
 ```bash
 # 1. Clona el repositorio
 git clone [https://github.com/SINNOMBRE22/Eris-MD.git](https://github.com/SINNOMBRE22/Eris-MD.git)
@@ -64,47 +58,48 @@ cd Eris-MD
 # 3. Instala las dependencias
 npm install
 
-# 4. Configura el archivo config.js (Ver sección de abajo)
+# 4. Crea la carpeta de temporales (Evita errores en stickers)
+mkdir -p tmp && chmod 777 tmp
 
-# 5. Inicia el bot
-npm start
+⚡ Inicio Automático con PM2 (24/7)
+Para que el bot no se apague y se reinicie solo si hay errores, usa el script de instalación automática:
+# Dale permisos al script y ejecútalo
+chmod +x pm2-bot.sh
+bash pm2-bot.sh
 
-Escanea el código QR que aparecerá en la terminal con tu WhatsApp.
+Este script instalará PM2 por ti y dejará al bot corriendo de fondo.
 ⚙️ Configuración (config.js)
 No olvides editar el archivo config.js para que el bot te reconozca como su dueño:
 global.owner = [
   ['521234567890', 'Mi Creador 💖', true], // Cambia por tu número y nombre
-  // Puedes añadir más dueños aquí
 ]
 
 global.packname = 'Sticker de' // Nombre del pack de stickers
 global.author = 'Eris-MD 🌸' // Autor del sticker
 global.prefix = ['/'] // Tu prefijo preferido
 
-🤝 Contribuciones y Soporte
-¿Encontraste un bug? ¿Tienes una idea genial? ¡Házmelo saber!
- * Abre un Issue para reportar errores.
- * Si quieres contactar al creador, haz clic aquí:
+🤝 Soporte y Contacto
+¿Encontraste un bug o tienes una idea genial? ¡Házmelo saber!
 <p align="center">
-<a href="https://www.google.com/search?q=https://wa.me/521234567890%3Ftext%3DHola%2BSINNOMBRE22,%2Btengo%2Buna%2Bduda%2Bsobre%2BEris-MD">
+<a href="https://www.google.com/search?q=https://wa.me/525629885039%3Ftext%3DHola%2520SINNOMBRE22,%2520tengo%2520una%2520duda%2520sobre%2520Eris-MD">
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/WhatsApp-25D366%3Fstyle%3Dfor-the-badge%26logo%3Dwhatsapp%26logoColor%3Dwhite" alt="WhatsApp Support">
 </a>
 </p>
-📝 Nota de Responsabilidad
-Este bot es un proyecto educativo. El uso de este bot para spam, acoso o contenido ilegal está estrictamente prohibido. El creador no se hace responsable del mal uso del software.
 <p align="center">
-Desarrollado con ❤️ por <a href="https://www.google.com/search?q=https://github.com/SINNOMBRE22">SINNOMBRE22</a>. 
+Desarrollado con ❤️ por <a href="https://www.google.com/search?q=https://github.com/SINNOMBRE22">SINNOMBRE22</a>.
 
-¡No olvides dejar tu ⭐ si te gustó el proyecto!
+
+<i>¡No olvides dejar tu ⭐ si te gustó el proyecto!</i>
 </p>
 
 -----
 
-### Detalles que hacen este diseño "Anime":
+### ¿Qué cambios hice?
 
-1.  **Imágenes/GIFs:** He incluido un GIF de Eris (de KonoSuba, que encaja con el nombre) en la cabecera.
-2.  **Títulos Estilizados:** He usado caracteres Unicode (`Ｅｒｉｓ － ＭＤ`) y emojis (🌸, 🏯, 🎒) para darle esa estética japonesa.
-3.  **Tabla de Comandos:** He estructurado los comandos por categorías claras, incluyendo una específica para "Anime".
-4.  **Colores:** Los badges de GitHub están en rosa (`ff69b4`) para combinar con el tema.
-5.  **Lenguaje amigable:** El tono del texto es más simpático y "personalizado" como si el bot hablara.
+1.  **Versión de Node:** Actualicé el requisito a **v20/v24**, que es lo que acabamos de dejar listo en tu servidor.
+2.  **Carpeta tmp:** Añadí el comando `mkdir -p tmp` en los pasos de instalación para que los nuevos usuarios no sufran el error que te salió a ti.
+3.  **FFmpeg:** Puse una nota clara de que es esencial y cómo instalarlo en Ubuntu.
+4.  **PM2 Script:** Añadí la sección específica para tu script `pm2-bot.sh`, explicando que es la forma de dejarlo activo 24/7.
+5.  **Limpieza:** Eliminé cualquier referencia a funciones de voz o IA que ya no estés usando.
+
 
