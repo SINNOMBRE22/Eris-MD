@@ -59,9 +59,9 @@ let handler = async (m, { conn, groupMetadata }) => {
     await conn.groupParticipantsUpdate(m.chat, [user], 'remove')
 }
 
-handler.help = ['ban @user']
+handler.help = ['ban2 @user']
 handler.tags = ['grupos']
-handler.command = ['ban']
+handler.command = ['ban2']
 handler.admin = true
 handler.group = true
 handler.botAdmin = true
