@@ -1,4 +1,4 @@
-/* 🦈 BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM (PURIFICADOR DE IDs) 🦈 */
+/* ✦ BIENVENIDA Y DESPEDIDA - ERIS-MD SYSTEM ✦ */
 
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import { readFileSync, unlinkSync, existsSync } from 'fs'
@@ -15,30 +15,24 @@ export async function before(m, { conn, participants, groupMetadata }) {
     if (!m.messageStubType || !m.isGroup) return true;
 
     let chat = global.db.data.chats[m.chat];
-    if (!chat?.welcome) return true; 
+    if (!chat?.welcome) return true;
 
-    // 1. Extraemos el usuario (Si no está en parámetros, lo sacamos del sender)
-    let rawUserId = m.messageStubParameters?.[0];
-    if (!rawUserId) rawUserId = m.sender;
-    if (!rawUserId) return true;
+    // 1. JID crudo
+    let rawId = m.messageStubParameters?.[0] || m.sender;
+    if (!rawId) return true;
 
-    // 2. 🔥 EL PURIFICADOR DE PUERTOS 🔥 (La solución a los números falsos)
-    let jid = rawUserId;
-    if (jid.includes(':')) {
-        // Cortamos la basura del puerto (ej. 52123:15@... -> 52123@...)
+    // 2. Limpiar puerto del JID
+    let jid = rawId;
+    if (jid.includes(':') && jid.includes('@')) {
+        const [numPart, domain] = jid.split('@');
+        jid = numPart.split(':')[0] + '@' + domain;
+    } else if (jid.includes(':')) {
         jid = jid.split(':')[0] + '@s.whatsapp.net';
     } else if (!jid.includes('@')) {
         jid = jid + '@s.whatsapp.net';
     }
 
     const userNumber = jid.split('@')[0];
-    
-    // 3. Obtenemos el nombre correctamente
-    let pushName = await conn.getName(jid);
-    if (!pushName || pushName === jid) {
-        pushName = `+${userNumber}`;
-    }
-
     const groupName = groupMetadata.subject;
     const groupSize = participants.length;
 
@@ -51,26 +45,35 @@ export async function before(m, { conn, participants, groupMetadata }) {
         let imgBuffer;
         try { imgBuffer = readFileSync(IMAGE_WELCOME); } catch { imgBuffer = Buffer.alloc(0); }
 
-        const welcomeText = `> ꒰🦈꒱ ¡Oh! Un Nuevo Juguete Se Unió, A Divertirme.\n\nEsperamos Todos Que Te Sientas Cómodo Aquí, Aunque Recuerda Que Solo Eres Un Integrante Más.\n\n∫ 👥 *Miembros:* ${groupSize}\n∫ 🆔 *ID:* @${userNumber}\n\n> ꒰💡꒱ ¿Necesitas Un Manual De Instrucciones? Usa .help`.trim();
+        let welcomeText;
+        if (chat.welcomeMsg) {
+            welcomeText = chat.welcomeMsg
+                .replace(/@user/gi, `@${userNumber}`)
+                .replace(/@nombre/gi, `@${userNumber}`)
+                .replace(/@grupo/gi, groupName)
+                .replace(/@miembros/gi, groupSize);
+        } else {
+            welcomeText = `> ꒰✦꒱ ¡Bienvenido/a al grupo, @${userNumber}!\n\nEsperamos que te sientas cómodo/a aquí. Recuerda respetar las reglas del grupo.\n\n∫ 👥 *Miembros:* ${groupSize}\n∫ 🏷️ *Grupo:* ${groupName}\n\n> ꒰💡꒱ ¿Necesitas ayuda? Usa *.help*`;
+        }
 
-        await conn.sendMessage(m.chat, { 
-            text: welcomeText, 
-            mentions: [jid], 
-            contextInfo: { 
+        await conn.sendMessage(m.chat, {
+            text: welcomeText,
+            mentions: [jid],
+            contextInfo: {
                 mentionedJid: [jid],
                 isForwarded: true,
-                forwardedNewsletterMessageInfo: { 
-                    newsletterJid: '120363407502496951@newsletter', 
-                    newsletterName: '✨ Eris-MD Oficial' 
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '120363407502496951@newsletter',
+                    newsletterName: '✨ Eris-MD Oficial'
                 },
                 externalAdReply: {
-                    title: `¡Bienvenido/a a ${groupName}!`,
-                    body: `Usuario: ${pushName}`,
-                    thumbnail: imgBuffer, 
+                    title: `✦ ¡Bienvenido/a a ${groupName}!`,
+                    body: " ",
+                    thumbnail: imgBuffer,
                     mediaType: 1,
                     renderLargerThumbnail: true
                 }
-            } 
+            }
         });
         return true;
     }
@@ -78,16 +81,24 @@ export async function before(m, { conn, participants, groupMetadata }) {
     // ==========================================================
     // EVENTO: DESPEDIDA
     // ==========================================================
-    // Se agregan los códigos 28 y 32 por seguridad en Baileys
     const leaveStubs = [WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE, 28, 32];
     if (leaveStubs.includes(m.messageStubType)) {
 
-        const byeText = `> ⊰🦈⊱ Oh, Se Fue @${userNumber}. Pff, Que Pérdida De Tiempo Fue Esa.\n\n➯ Que Bueno Que Te Fuiste, Se Le Dará Tu Lugar A Otra Persona Que Si Lo Valore.\n\n> ⊰🦈⊱ Y Eso Es Todo Por Mi Parte, No Me Molestes.`.trim();
+        let byeText;
+        if (chat.byeMsg) {
+            byeText = chat.byeMsg
+                .replace(/@user/gi, `@${userNumber}`)
+                .replace(/@nombre/gi, `@${userNumber}`)
+                .replace(/@grupo/gi, groupName)
+                .replace(/@miembros/gi, groupSize);
+        } else {
+            byeText = `> ꒰✦꒱ @${userNumber} ha salido del grupo.\n\nFue un gusto tenerte aquí. ¡Hasta la próxima!\n\n∫ 👥 *Miembros restantes:* ${groupSize}`;
+        }
 
-        await conn.sendMessage(m.chat, { 
-            text: byeText, 
+        await conn.sendMessage(m.chat, {
+            text: byeText,
             mentions: [jid],
-            contextInfo: { mentionedJid: [jid] } 
+            contextInfo: { mentionedJid: [jid] }
         });
 
         if (existsSync(AUDIO_MP3)) {
@@ -107,13 +118,13 @@ export async function before(m, { conn, participants, groupMetadata }) {
                     mimetype: 'audio/ogg; codecs=opus',
                     ptt: true,
                     contextInfo: {
-                        mentionedJid: [jid], 
+                        mentionedJid: [jid],
                         externalAdReply: {
-                            title: 'Despedida De Un Guerrero | Eris-MD',
-                            body: `${pushName} (@${userNumber}) Se Fue ALV 😂`,
-                            thumbnail: thumbBuffer, 
+                            title: '✦ Despedida | Eris-MD',
+                            body: ' ',
+                            thumbnail: thumbBuffer,
                             mediaType: 1,
-                            renderLargerThumbnail: false, 
+                            renderLargerThumbnail: false,
                             showAdAttribution: true
                         }
                     }
@@ -121,7 +132,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
                 if (existsSync(AUDIO_OGG)) unlinkSync(AUDIO_OGG);
             } catch (e) {
-                console.error('❌ Error En Despedida Eris-MD:', e);
+                console.error('❌ Error en despedida Eris-MD:', e);
             }
         }
         return true;
