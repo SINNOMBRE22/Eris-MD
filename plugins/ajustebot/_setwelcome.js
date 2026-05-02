@@ -1,11 +1,9 @@
 /* ✦ SETWELCOME - ERIS-MD ✦ */
-/* Permite a admins cambiar el mensaje de bienvenida y despedida */
 
 const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetadata }) => {
     const chat = global.db.data.chats[m.chat];
     const prefix = '.';
 
-    // ── SUBCOMANDOS ──────────────────────────────────────────────
     const sub = args[0]?.toLowerCase();
 
     // .setwelcome ver
@@ -35,6 +33,7 @@ const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetad
     // .setwelcome reset
     if (sub === 'reset') {
         delete chat.welcomeMsg;
+        await global.db.write(); // ✅
         return conn.sendMessage(m.chat, {
             text: `> ꒰✦꒱ Bienvenida restablecida al mensaje por *defecto*.`
         }, { quoted: m });
@@ -43,6 +42,7 @@ const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetad
     // .setwelcome bye reset
     if (sub === 'bye' && args[1]?.toLowerCase() === 'reset') {
         delete chat.byeMsg;
+        await global.db.write(); // ✅
         return conn.sendMessage(m.chat, {
             text: `> ꒰✦꒱ Despedida restablecida al mensaje por *defecto*.`
         }, { quoted: m });
@@ -62,6 +62,7 @@ const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetad
             }, { quoted: m });
         }
         chat.byeMsg = nuevoMensaje;
+        await global.db.write(); // ✅
         return conn.sendMessage(m.chat, {
             text: [
                 `> ꒰✦꒱ *Despedida actualizada:*`,
@@ -73,7 +74,7 @@ const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetad
         }, { quoted: m });
     }
 
-    // .setwelcome <mensaje> — cambia la bienvenida
+    // .setwelcome <mensaje>
     const nuevoMensaje = args.join(' ');
     if (!nuevoMensaje) {
         return conn.sendMessage(m.chat, {
@@ -100,6 +101,7 @@ const handler = async (m, { conn, args, command, isAdmin, isBotAdmin, groupMetad
     }
 
     chat.welcomeMsg = nuevoMensaje;
+    await global.db.write(); // ✅
     return conn.sendMessage(m.chat, {
         text: [
             `> ꒰✦꒱ *Bienvenida actualizada:*`,
@@ -115,7 +117,7 @@ handler.help = ['setwelcome <mensaje>', 'setwelcome bye <mensaje>', 'setwelcome 
 handler.tags = ['grupos'];
 handler.command = ['setwelcome', 'bienvenidacambiar', 'setwlc'];
 handler.group = true;
-handler.admin = true;      // Solo admins del grupo
-handler.botAdmin = false;  // El bot no necesita ser admin para esto
+handler.admin = true;
+handler.botAdmin = false;
 
 export default handler;
