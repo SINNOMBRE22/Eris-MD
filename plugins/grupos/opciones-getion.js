@@ -4,22 +4,22 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 
 const handler = async (m, { conn }) => {
-  // 📂 Cargar Imagen Local para la miniatura
   let localThumb;
   try {
     localThumb = readFileSync(join(process.cwd(), 'src', 'imagenes', 'perfil2.jpeg'));
   } catch (e) {
-    localThumb = { url: 'https://tinyurl.com/SinNombre-chan' }; // Fallback si no existe
+    localThumb = { url: 'https://tinyurl.com/SinNombre-chan' };
   }
 
   const chat = global.db.data.chats[m.chat];
   if (!chat) return; 
 
-  const { welcome, autolevelup, antiBot, antiBot2, autoAceptar, autoRechazar, autoresponder, modoadmin, reaction, nsfw, detect, antiLink, antiLink2, antitoxic, antiTraba, antifake } = chat;
+  const { welcome, autolevelup, antiBot, antiBot2, autoAceptar, autoRechazar, autoresponder, modoadmin, reaction, nsfw, detect, antiLink, antiLink2, antitoxic, antiTraba, antifake, antiNsfw } = chat;
 
   const text = `✨ *Configuración Del Grupo* 
 ◈ Bienvenida: \`${welcome ? 'Activado' : 'Desactivado'}\`
 > ➨ *Descripción:* Activa O Desactiva El Mensaje De Bienvenida.
+
 ◈ Antibot: \`${antiBot ? 'Activado' : 'Desactivado'}\`
 > ➨ *Descripción:* Expulsa Otros Bots No Autorizados Del Grupo.
 
@@ -62,6 +62,9 @@ const handler = async (m, { conn }) => {
 ◈ Antifake: \`${antifake ? 'Activado' : 'Desactivado'}\`
 > ➨ *Descripción:* Bloquea Números Falsos O Extranjeros.
 
+◈ Anti-Nsfw: \`${antiNsfw ? 'Activado' : 'Desactivado'}\`
+> ➨ *Descripción:* Detecta Y Elimina Imágenes Explícitas, Expulsando Al Infractor.
+
 _*✦ Nota: Puedes Activar Una Opción Usando: .activar <función> (Ejemplo: .activar bienvenida)*_`.trim();
 
   await conn.sendMessage(m.chat, {
@@ -70,7 +73,7 @@ _*✦ Nota: Puedes Activar Una Opción Usando: .activar <función> (Ejemplo: .ac
       externalAdReply: {
         title: 'Eris-MD | Shark Service',
         body: 'Configuración De Funciones',
-        thumbnail: localThumb, // Usa tu imagen perfil2.jpg
+        thumbnail: localThumb,
         mediaType: 1,
         showAdAttribution: true,
         renderLargerThumbnail: true

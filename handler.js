@@ -142,13 +142,14 @@ if (!universalWords.includes(firstWord) && this?.user?.jid !== chat.primaryBot) 
                 if (!('reaction' in chat)) chat.reaction = false
                 if (!('nsfw' in chat)) chat.nsfw = false
                 if (!('antifake' in chat)) chat.antifake = false
+                if (!('antiNsfw' in chat)) chat.antiNsfw = false
                 if (!('delete' in chat)) chat.delete = false
                 if (!isNumber(chat.expired)) chat.expired = 0
                 if (!('antiLag' in chat)) chat.antiLag = false
                 if (!('per' in chat)) chat.per = []
             } else
                 global.db.data.chats[m.chat] = {
-                    sAutoresponder: '', welcome: true, isBanned: false, autolevelup: false, autoresponder: false, delete: false, autoAceptar: false, autoRechazar: false, detect: true, antiBot: false, antiBot2: false, modoadmin: false, antiLink: true, antifake: false, reaction: false, nsfw: false, expired: 0, antiLag: false, per: [],
+                    sAutoresponder: '', welcome: true, isBanned: false, autolevelup: false, autoresponder: false, delete: false, autoAceptar: false, autoRechazar: false, detect: true, antiBot: false, antiBot2: false, modoadmin: false, antiLink: true, antifake: false, antiNsfw: false, reaction: false, nsfw: false, expired: 0, antiLag: false, per: [],
                 }
             var settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}

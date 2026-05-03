@@ -11,7 +11,7 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
   let type = '';
   let isAll = false, isUser = false;
   let isEnable;
-  let isSame = false; // <--- Nuevo detector para saber si ya estaba activa/desactiva
+  let isSame = false;
 
   // --- DETECCIÓN MULTI-IDIOMA DE ACTIVACIÓN ---
   const cmd = command.toLowerCase();
@@ -25,7 +25,6 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
     isEnable = false;
     type = args[0] ? args[0].toLowerCase() : '';
   } else {
-    // Soporte para formato inverso (ej: .antibot activar)
     type = cmd;
     let arg = args[0] ? args[0].toLowerCase() : '';
     if (['on', 'enable', 'activar'].includes(arg)) {
@@ -33,16 +32,14 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
     } else if (['off', 'disable', 'desactivar'].includes(arg)) {
       isEnable = false;
     } else {
-      // Si solo ponen el comando (ej: .antibot), muestra el estado actual
       const estado = chat[type] ? '✓ Activado' : '✗ Desactivado';
       return conn.reply(m.chat, `「✦」Un Administrador Puede Activar O Desactivar El Comando *${type.toUpperCase()}* Utilizando:\n\n> ✐ *${usedPrefix}activar ${type}*\n> ✐ *${usedPrefix}desactivar ${type}*\n\n✧ Estado Actual » *${estado}*`, m);
     }
   }
 
-  // Si se les olvidó poner qué función activar
   if (!type) return conn.reply(m.chat, `「✦」Falta la función. Ejemplo: *${usedPrefix}activar antibot*`, m);
 
-  // --- SWITCH DE COMANDOS (Con verificación de estado) ---
+  // --- SWITCH DE COMANDOS ---
   switch (type) {
     case 'welcome':
     case 'bv':
@@ -198,30 +195,31 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       if (m.isGroup && !(isAdmin || isOwner)) { global.dfail('admin', m, conn); throw false; }
       if (chat.audios === isEnable) isSame = true; else chat.audios = isEnable;
       break;
-      
+
+    // ── ANTI-NSFW ────────────────────────────────────────────────────────────
+    case 'antinsfw':
+    case 'antinsf':
+    case 'nsfwdetect':
+      if (m.isGroup && !(isAdmin || isOwner)) { global.dfail('admin', m, conn); throw false; }
+      if (chat.antiNsfw === isEnable) isSame = true; else chat.antiNsfw = isEnable;
+      break;
+
     default:
       if (!/[01]/.test(command)) return conn.reply(m.chat, `「✦」La Función *${type}* No Existe En La Lista.`, m);
       throw false;
   }
 
-  // --- RESPUESTA FINAL INTELIGENTE ---
+  // --- RESPUESTA FINAL ---
   let mensajeFinal = '';
-  
   if (isSame) {
-    // Si la función ya estaba en el estado solicitado
     mensajeFinal = `《✦》La Función *${type.toUpperCase()}* Ya Estaba *${isEnable ? 'Activada' : 'Desactivada'}* ${isAll ? 'Para Este Bot' : isUser ? '' : 'Para Este Chat'}`;
   } else {
-    // Si la función cambió de estado correctamente
     mensajeFinal = `《✦》La Función *${type.toUpperCase()}* Se *${isEnable ? 'Activó' : 'Desactivó'}* ${isAll ? 'Para Este Bot' : isUser ? '' : 'Para Este Chat'}`;
   }
   
   conn.reply(m.chat, mensajeFinal, m);
 };
 
-//handler.help = ['welcome', 'bienvenida', 'antiprivado', 'restrict', 'autolevelup', 'autosticker', 'antibot', 'autoaceptar', 'autorechazar', 'autoresponder', 'antisubbots', 'modoadmin', 'autoread', 'antiver', 'reaction', 'nsfw', 'antispam', 'antidelete', 'detect', 'antilink', 'antilink2', 'antitoxic', 'antitraba', 'antifake', 'audios']
-//handler.tags = ['nable'];
-
-// Regex actualizado con todos los disparadores
-handler.command = /^(on|off|enable|disable|activar|desactivar|welcome|bv|bienvenida|antiprivado|antipriv|antiprivate|restrict|restringir|autolevelup|autonivel|autosticker|antibot|antibots|autoaceptar|aceptarauto|autorechazar|rechazarauto|autoresponder|autorespond|antisubbots|antisub|antisubot|antibot2|modoadmin|soloadmin|autoread|autoleer|autover|antiver|antiocultar|antiviewonce|reaction|reaccion|emojis|nsfw|nsfwhot|nsfwhorny|antispam|antiSpam|antispamosos|antidelete|antieliminar|jadibotmd|modejadibot|subbots|detect|configuraciones|avisodegp|detect2|avisos|eventos|autosimi|simsimi|antilink|antilink2|antitoxic|antitoxicos|antitraba|antitrabas|antifake|antivirtuales|audios)$/i
+handler.command = /^(on|off|enable|disable|activar|desactivar|welcome|bv|bienvenida|antiprivado|antipriv|antiprivate|restrict|restringir|autolevelup|autonivel|autosticker|antibot|antibots|autoaceptar|aceptarauto|autorechazar|rechazarauto|autoresponder|autorespond|antisubbots|antisub|antisubot|antibot2|modoadmin|soloadmin|autoread|autoleer|autover|antiver|antiocultar|antiviewonce|reaction|reaccion|emojis|nsfw|nsfwhot|nsfwhorny|antispam|antiSpam|antispamosos|antidelete|antieliminar|jadibotmd|modejadibot|subbots|detect|configuraciones|avisodegp|detect2|avisos|eventos|autosimi|simsimi|antilink|antilink2|antitoxic|antitoxicos|antitraba|antitrabas|antifake|antivirtuales|audios|antinsfw|antinsf|nsfwdetect)$/i
 
 export default handler;
