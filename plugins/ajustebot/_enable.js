@@ -13,7 +13,6 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
   let isEnable;
   let isSame = false;
 
-  // --- DETECCIÓN MULTI-IDIOMA DE ACTIVACIÓN ---
   const cmd = command.toLowerCase();
   const encender = ['on', 'enable', 'activar'].includes(cmd);
   const apagar = ['off', 'disable', 'desactivar'].includes(cmd);
@@ -39,7 +38,6 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
 
   if (!type) return conn.reply(m.chat, `「✦」Falta la función. Ejemplo: *${usedPrefix}activar antibot*`, m);
 
-  // --- SWITCH DE COMANDOS ---
   switch (type) {
     case 'welcome':
     case 'bv':
@@ -209,6 +207,9 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       throw false;
   }
 
+  // ── GUARDAR EN DISCO ──────────────────────────────────────────────────────
+// ── GUARDAR EN DISCO ──────────────────────────────────────────────────────
+global.db.write()
   // --- RESPUESTA FINAL ---
   let mensajeFinal = '';
   if (isSame) {
