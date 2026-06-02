@@ -1,20 +1,24 @@
-/* ERIS-MD ANIME DOWNLOADER - v1
-   Busca el video en Facebook/YouTube via yt-dlp
-   Lo envía como DOCUMENTO .mp4 (sin límite de 64 MB de WA)
-   Uso: .animedl konosuba capitulo 1 completo español                    */
+/* ERIS-MD ANIME DOWNLOADER - v10 (Multi-Language Ready)
+   Busca anime en múltiples idiomas usando parámetros (--latino / --castellano)
+   Uso: .animedl konosuba 1 --latino
+        .animedl konosuba 1                     */
 
 import fs        from 'fs'
 import path      from 'path'
 import https     from 'https'
 import http      from 'http'
-import { spawn } from 'child_process'
-import os        from 'os'
 
 const newsletterJid  = '120363407502496951@newsletter'
 const newsletterName = 'Eris Service'
 const redes          = 'https://github.com/SINNOMBRE22/Eris-MD'
 
-// ── HTTP fetch → Buffer ──────────────────────────────────────────────
+// ── CONFIGURACIÓN DE LA API ──────────────────────────────────────────
+const API_BASE_URL = 'http://127.0.0.1:3000/api/v1/anime' 
+
+function fetchJson(url, opts = {}) {
+  return fetchBuffer(url, opts).then(buf => JSON.parse(buf.toString()))
+}
+
 function fetchBuffer(url, opts = {}, redir = 8) {
   return new Promise((resolve, reject) => {
     if (!redir) return reject(new Error('Demasiados redirects'))
@@ -26,20 +30,12 @@ function fetchBuffer(url, opts = {}, redir = 8) {
         port:     parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
         path:     parsed.pathname + parsed.search,
         method:   opts.method || 'GET',
-        headers: {
-          'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-          'Accept':          'text/html,application/xhtml+xml,application/json,*/*;q=0.9',
-          'Accept-Language': 'es-MX,es;q=0.9,en;q=0.8',
-          'Accept-Encoding': 'identity',
-          ...opts.headers
-        },
-        timeout: 180000   // 3 min — videos largos necesitan más tiempo
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', ...opts.headers },
+        timeout: 300000 
       }
       const req = mod.request(options, (res) => {
         if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
-          const next = res.headers.location.startsWith('http')
-            ? res.headers.location
-            : `${parsed.protocol}//${parsed.host}${res.headers.location}`
+          const next = res.headers.location.startsWith('http') ? res.headers.location : `${parsed.protocol}//${parsed.host}${res.headers.location}`
           return fetchBuffer(next, opts, redir - 1).then(resolve).catch(reject)
         }
         if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode} → ${url}`))
@@ -48,7 +44,7 @@ function fetchBuffer(url, opts = {}, redir = 8) {
         res.on('end',   () => resolve(Buffer.concat(chunks)))
         res.on('error', reject)
       })
-      req.on('timeout', () => { req.destroy(); reject(new Error('Timeout — el video tardó demasiado en descargarse')) })
+      req.on('timeout', () => { req.destroy(); reject(new Error('Timeout remoto.')) })
       req.on('error', reject)
       if (opts.body) req.write(opts.body)
       req.end()
@@ -56,238 +52,234 @@ function fetchBuffer(url, opts = {}, redir = 8) {
   })
 }
 
-// ── Verificar que yt-dlp está instalado ─────────────────────────────
-function ytdlpExists() {
-  return new Promise((resolve) => {
-    const proc = spawn('yt-dlp', ['--version'])
-    proc.on('error', () => resolve(false))
-    proc.on('close', (code) => resolve(code === 0))
-  })
-}
-
-// ── Buscar en YouTube el primer resultado y descargar ────────────────
-// query: texto libre, ej. "konosuba capitulo 1 completo español"
-function ytdlpSearchAndDownload(query) {
-  return new Promise((resolve, reject) => {
-    // Primero obtenemos la URL del primer resultado de YouTube
-    const searchProc = spawn('yt-dlp', [
-      '--no-playlist',
-      '--format', 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[ext=mp4]/best',
-      '--get-url',
-      '--no-warnings',
-      `ytsearch1:${query}`   // busca en YouTube y toma el primer resultado
-    ])
-
-    let stdout = ''
-    let stderr = ''
-    searchProc.stdout.on('data', d => { stdout += d.toString() })
-    searchProc.stderr.on('data', d => { stderr += d.toString() })
-
-    searchProc.on('close', async (code) => {
-      if (code !== 0 || !stdout.trim()) {
-        return reject(new Error(`yt-dlp búsqueda falló (code ${code}): ${stderr.trim().split('\n').pop() || 'sin resultado'}`) )
-      }
-
-      const urls = stdout.trim().split('\n').filter(Boolean)
-
-      if (urls.length === 1) {
-        // Un solo stream → descarga directa
-        try {
-          const buf = await fetchBuffer(urls[0], { headers: { 'Referer': 'https://www.youtube.com/' } })
-          return resolve({ buffer: buf, calidad: 'HD', fuente: 'YouTube' })
-        } catch (e) {
-          return reject(new Error(`Descarga directa falló: ${e.message}`))
-        }
-      }
-
-      // Video + audio separados → merge con ffmpeg a archivo temporal
-      const tmpFile = path.join(os.tmpdir(), `anime_eris_${Date.now()}.mp4`)
-      const dlProc  = spawn('yt-dlp', [
-        '--no-playlist',
-        '--format', 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[ext=mp4]/best',
-        '--merge-output-format', 'mp4',
-        '--no-warnings',
-        '-o', tmpFile,
-        `ytsearch1:${query}`
-      ])
-
-      let dlErr = ''
-      dlProc.stderr.on('data', d => { dlErr += d.toString() })
-      dlProc.on('close', (dlCode) => {
-        if (dlCode !== 0) {
-          try { fs.unlinkSync(tmpFile) } catch {}
-          return reject(new Error(`yt-dlp merge falló (code ${dlCode}): ${dlErr.trim().split('\n').pop() || 'sin detalle'}`))
-        }
-        try {
-          const buf = fs.readFileSync(tmpFile)
-          fs.unlinkSync(tmpFile)
-          return resolve({ buffer: buf, calidad: 'HD', fuente: 'YouTube' })
-        } catch (e) {
-          return reject(new Error(`Lectura archivo temporal falló: ${e.message}`))
-        }
-      })
-      dlProc.on('error', (e) => reject(new Error(`yt-dlp spawn error: ${e.message}`)))
-    })
-    searchProc.on('error', (e) => reject(new Error(`yt-dlp spawn error: ${e.message}`)))
-  })
-}
-
-// ── Obtener título real del video antes de descargar ─────────────────
-function getVideoTitle(query) {
-  return new Promise((resolve) => {
-    const proc = spawn('yt-dlp', [
-      '--no-playlist',
-      '--get-title',
-      '--no-warnings',
-      `ytsearch1:${query}`
-    ])
-    let out = ''
-    proc.stdout.on('data', d => { out += d.toString() })
-    proc.on('close', () => resolve(out.trim().split('\n')[0] || query))
-    proc.on('error', () => resolve(query))
-  })
-}
-
-// ── Handler ──────────────────────────────────────────────────────────
 const handler = async (m, { conn, args, usedPrefix, command }) => {
-  const query = args.join(' ').trim()
-
+  let textInput = args.join(' ').trim()
+  
   let thumb = Buffer.alloc(0)
   try { thumb = fs.readFileSync(path.join(process.cwd(), 'src/imagenes/perfil2.jpeg')) } catch {}
-
   const name = m.pushName || (await conn.getName(m.sender)) || 'Usuario'
 
-  // ── Sin argumentos: mostrar ayuda con ejemplos ───────────────────
-  if (!query) {
+  if (!textInput) {
     return conn.sendMessage(m.chat, {
       text: [
-        `╭─── [ 🎌 *ANIME DOWNLOADER* ] ──···`,
+        `╭─── [ 🎌 *ANIME MULTI-IDIOMA v10* ] ──···`,
         `│`,
-        `│ ⚠️ *Debes indicar qué anime buscar.*`,
+        `│ 📌 *Uso general:*`,
+        `│ ${usedPrefix + command} <nombre> <capítulo> [idioma]`,
         `│`,
-        `│ 📌 *Uso:*`,
-        `│ ${usedPrefix + command} <nombre del anime>`,
+        `│ 🎌 *Opciones de Idioma:*`,
+        `│ • _Por defecto:_ Subtitulado al Español`,
+        `│ • \`--latino\` : Audio Latino`,
+        `│ • \`--castellano\` : Audio Castellano`,
         `│`,
         `│ 📖 *Ejemplos:*`,
-        `│ • ${usedPrefix + command} konosuba capitulo 1 completo español`,
-        `│ • ${usedPrefix + command} dragon ball z capitulo 5 latino`,
-        `│ • ${usedPrefix + command} naruto shippuden episodio 1 sub español`,
-        `│ • ${usedPrefix + command} one piece episodio 1000 completo`,
-        `│`,
-        `│ 💡 *Tip:* Mientras más específico seas`,
-        `│    mejor será el resultado encontrado.`,
-        `│`,
-        `│ 📁 El video se envía como *archivo .mp4*`,
-        `│    para evitar el límite de tamaño de WA.`,
-        `╰─────────────────────────────────···`,
-        ``,
-        `> 🌸 *Servidor de Medios - Eris Service*`
+        `│ • ${usedPrefix + command} konosuba 1`,
+        `│ • ${usedPrefix + command} konosuba 1 --latino`,
+        `│ • ${usedPrefix + command} naruto 12 --castellano`,
+        `╰─────────────────────────────────···`
       ].join('\n'),
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999, isForwarded: true,
         forwardedNewsletterMessageInfo: { newsletterJid, newsletterName, serverMessageId: -1 },
         externalAdReply: {
-          title: `🌸 ERIS SERVICE - ANIME DL 🌸`,
-          body: `Hola ${name}, indica el anime que quieres.`,
+          title: `🌸 ERIS MULTI-LANG ANIME 🌸`,
+          body: `Hola ${name}, elige tu serie e idioma preferido.`,
           thumbnail: thumb, mediaType: 1, renderLargerThumbnail: false, sourceUrl: redes
         }
       }
     }, { quoted: m })
   }
 
-  // ── Verificar yt-dlp ─────────────────────────────────────────────
-  const hasYtdlp = await ytdlpExists()
-  if (!hasYtdlp) {
-    return conn.reply(
-      m.chat,
-      `❌ *yt-dlp no está instalado en el servidor.*\n\nEjecuta en tu VPS:\n\`\`\`pip install yt-dlp\`\`\``,
-      m
-    )
+  // Detectar y extraer banderas de idioma
+  let targetLang = 'sub' 
+  let langLabel = 'Español Subtitulado'
+
+  if (textInput.includes('--latino')) {
+    targetLang = 'latino'
+    langLabel = 'Audio Latino'
+    textInput = textInput.replace('--latino', '').trim()
+  } else if (textInput.includes('--castellano')) {
+    targetLang = 'castellano'
+    langLabel = 'Audio Castellano'
+    textInput = textInput.replace('--castellano', '').trim()
   }
+
+  const matchEpisode = textInput.match(/\d+$/)
+  if (!matchEpisode) {
+    return conn.reply(m.chat, `❌ *No especificaste el número del capítulo.*\nEjemplo: \`${usedPrefix + command} konosuba 1 --latino\``, m)
+  }
+  
+  const episode = matchEpisode[0]
+  const animeQuery = textInput.replace(episode, '').replace(/\b(capitulo|capítulo|temporada|episodio|cap|ep)\b/gi, '').replace(/\s+/g, ' ').trim()
+
+  if (!animeQuery) return conn.reply(m.chat, `❌ *Falta el nombre del anime.*`, m)
 
   await m.react('🔍')
 
-  // Obtener título primero para mostrarlo al usuario
-  const videoTitle = await getVideoTitle(query)
-
-  await conn.sendMessage(m.chat, {
-    text: [
-      `╭─── [ 🎌 *ANIME DOWNLOADER* ] ──···`,
-      `│ 🔍 *Buscando:* ${query}`,
-      `│ 🎬 *Encontrado:* ${videoTitle}`,
-      `│ ⏳ *Descargando... esto puede tardar*`,
-      `│    *unos minutos para videos largos.*`,
-      `╰─────────────────────────────────···`
-    ].join('\n')
-  }, { quoted: m })
-
-  await m.react('⏳')
-
   try {
-    const videoData = await ytdlpSearchAndDownload(query)
+    // 1. Buscar el anime en la API (Agregamos parámetro de idioma a la búsqueda si tu API lo requiere en el futuro)
+    const searchRes = await fetchJson(`${API_BASE_URL}/search?q=${encodeURIComponent(animeQuery)}&lang=${targetLang}`)
+    const searchResults = searchRes.data?.results || searchRes.results || (Array.isArray(searchRes) ? searchRes : null)
 
-    if (!videoData.buffer || videoData.buffer.length < 5000)
-      throw new Error('El video descargado está vacío o es inválido.')
+    if (!searchResults || searchResults.length === 0) throw new Error(`No se encontró ningún anime con ese nombre en la base de datos de ${langLabel}.`)
 
-    const sizeMB = (videoData.buffer.length / 1024 / 1024).toFixed(1)
+    const animeSelected = searchResults[0] 
+    const animeUrl = animeSelected.url 
+    const animeTitle = animeSelected.title || animeQuery
 
-    const caption = [
-      `╭─── [ 🎌 *ANIME DOWNLOADER* ] ──···`,
-      `│ 👤 *Usuario:* ${name}`,
-      `│ 🔍 *Búsqueda:* ${query}`,
-      `│ 🎬 *Título:* ${videoTitle}`,
-      `│ ⚙️ *Calidad:* ${videoData.calidad}`,
-      `│ 📦 *Tamaño:* ${sizeMB} MB`,
-      `│ 🌐 *Fuente:* ${videoData.fuente}`,
-      `╰─────────────────────────────────···`,
-      ``,
-      `> 🌸 *Servidor de Medios - Eris Service*`
-    ].join('\n')
-
-    // ── Envío como DOCUMENTO (sin límite de 64 MB de WA) ────────────
     await conn.sendMessage(m.chat, {
-      document: videoData.buffer,
-      caption,
-      fileName: `${videoTitle.slice(0, 60).replace(/[^\w\s\-]/g, '')}.mp4`,
-      mimetype: 'video/mp4',
-      contextInfo: {
-        mentionedJid: [m.sender],
-        forwardingScore: 999, isForwarded: true,
-        forwardedNewsletterMessageInfo: { newsletterJid, newsletterName, serverMessageId: -1 },
-        externalAdReply: {
-          title: `🌸 ERIS SERVICE - ANIME DL 🌸`,
-          body: `Archivo listo para: ${name}`,
-          thumbnail: thumb, mediaType: 1, renderLargerThumbnail: false, sourceUrl: redes
-        }
-      }
+      text: [
+        `╭─── [ 🎌 *ANIME DOWNLOADER* ] ──···`,
+        `│ 🔍 *Buscando:* ${animeQuery} - Cap ${episode}`,
+        `│ 🎬 *Encontrado:* ${animeTitle}`,
+        `│ 🔊 *Idioma:* ${langLabel}`,
+        `│ ⏳ *Analizando servidores...*`,
+        `╰─────────────────────────────────···`
+      ].join('\n')
     }, { quoted: m })
 
-    await m.react('✅')
+    await m.react('⏳')
+
+    let targetEpisodeUrl = animeUrl.endsWith('/') ? `${animeUrl}${episode}/` : `${animeUrl}/${episode}/`
+
+    // 2. Consultar endpoint enviando el idioma seleccionado
+    const episodeRes = await fetchJson(`${API_BASE_URL}/episode?url=${encodeURIComponent(targetEpisodeUrl)}&lang=${targetLang}`)
+    
+    // El bot busca dinámicamente en la propiedad del idioma solicitado: data.servers.latino, data.servers.sub, etc.
+    let videoServers = episodeRes.data?.servers?.[targetLang] || episodeRes.data?.servers?.sub || episodeRes.servers?.[targetLang] || null
+
+    if (!videoServers && episodeRes.data?.servers && Array.isArray(episodeRes.data.servers)) {
+      videoServers = episodeRes.data.servers
+    }
+
+    if (!Array.isArray(videoServers) || videoServers.length === 0) {
+      throw new Error(`La API no devolvió servidores activos para el idioma ${langLabel} en el capítulo ${episode}.`)
+    }
+
+    let directUrl = null
+    let serverName = 'Desconocido'
+    let streamingFallbackUrl = null
+    let streamingServerName = 'Reproductores Web'
+
+    const blacklistedServers = ['jkplayer', 'jkv2', 'embed', 'player', 'visualizador']
+    const preferredServers = ['fireload', 'gocdn', 'mp4upload', 'sw', 'zippyshare', 'mega', 'fembed', 'mixdrop']
+    
+    for (const pref of preferredServers) {
+      const found = videoServers.find(s => {
+        const nameStr = String(s.server || s.name || s.title || '').toLowerCase().trim()
+        return nameStr.includes(pref) && !blacklistedServers.some(b => nameStr.includes(b)) && (s.url || s.code || s.link)
+      })
+      if (found) {
+        directUrl = found.url || found.code || found.link
+        serverName = found.server || found.name || found.title
+        break
+      }
+    }
+
+    if (!directUrl) {
+      const fallback = videoServers.find(s => {
+        const nameStr = String(s.server || s.name || s.title || '').toLowerCase().trim()
+        return !blacklistedServers.some(b => nameStr.includes(b)) && (s.url || s.code || s.link)
+      })
+      if (fallback) {
+        directUrl = fallback.url || fallback.code || fallback.link
+        serverName = fallback.server || fallback.name || fallback.title
+      }
+    }
+
+    const playerServer = videoServers.find(s => s.url || s.code || s.link)
+    if (playerServer) {
+      streamingFallbackUrl = playerServer.url || playerServer.code || playerServer.link
+      streamingServerName = playerServer.server || playerServer.name || playerServer.title
+    }
+
+    // MODO 1: Enviar archivo de descarga directa si existe
+    if (directUrl) {
+      const videoBuffer = await fetchBuffer(directUrl)
+
+      if (videoBuffer && videoBuffer.length > 500000) {
+        const sizeMB = (videoBuffer.length / 1024 / 1024).toFixed(1)
+        const finalFileName = `${animeTitle.slice(0, 40).replace(/[^\w\s\-]/g, '')}_Cap_${episode}_(${targetLang}).mp4`
+
+        const caption = [
+          `╭─── [ 🎌 *ANIME DOWNLOADER* ] ──···`,
+          `│ 👤 *Usuario:* ${name}`,
+          `│ 🎬 *Anime:* ${animeTitle}`,
+          `│ 🎞️ *Capítulo:* ${episode}`,
+          `│ 🔊 *Audio:* ${langLabel}`,
+          `│ 📦 *Tamaño:* ${sizeMB} MB`,
+          `│ 🌐 *Servidor:* ${serverName}`,
+          `╰─────────────────────────────────···`
+        ].join('\n')
+
+        await conn.sendMessage(m.chat, {
+          document: videoBuffer,
+          caption,
+          fileName: finalFileName,
+          mimetype: 'video/mp4',
+          contextInfo: {
+            mentionedJid: [m.sender],
+            forwardingScore: 999, isForwarded: true,
+            forwardedNewsletterMessageInfo: { newsletterJid, newsletterName, serverMessageId: -1 },
+            externalAdReply: {
+              title: `🌸 DOWNLOAD: ${animeTitle.toUpperCase()}`,
+              body: `Capítulo ${episode} en ${langLabel}`,
+              thumbnail: thumb, mediaType: 1, renderLargerThumbnail: false, sourceUrl: redes
+            }
+          }
+        }, { quoted: m })
+
+        return await m.react('✅')
+      }
+    }
+
+    // MODO 2: Enviar enlace si solo hay reproductores
+    if (streamingFallbackUrl) {
+      const liveLink = streamingFallbackUrl.startsWith('http') ? streamingFallbackUrl : targetEpisodeUrl
+
+      await conn.sendMessage(m.chat, {
+        text: [
+          `╭─── [ 🎌 *ANIME STREAMING* ] ──···`,
+          `│ 🎬 *Anime:* ${animeTitle}`,
+          `│ 🎞️ *Capítulo:* ${episode}`,
+          `│ 🔊 *Audio:* ${langLabel}`,
+          `│ 🌐 *Servidor:* ${streamingServerName}`,
+          `├─────────────────────────────────···`,
+          `│ ⚠️ _No hay enlaces de descarga directa_`,
+          `│ _disponibles para este idioma en este servidor._`,
+          `╰─────────────────────────────────···`,
+          ``,
+          `🔗 *Enlace para reproducir / descargar:*`,
+          `${liveLink}`
+        ].join('\n'),
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999, isForwarded: true,
+          forwardedNewsletterMessageInfo: { newsletterJid, newsletterName, serverMessageId: -1 },
+          externalAdReply: {
+            title: `📺 REPRODUCTOR: ${animeTitle.toUpperCase()}`,
+            body: `Ver episodio ${episode} en ${langLabel}`,
+            thumbnail: thumb, mediaType: 1, renderLargerThumbnail: false, sourceUrl: liveLink
+          }
+        }
+      }, { quoted: m })
+
+      return await m.react('📺')
+    }
+
+    throw new Error('No se encontraron opciones de reproducción para este idioma.')
 
   } catch (e) {
-    console.error('[ANIMEDL] Error:', e.message)
+    console.error('[ANIMEDL-API] Error:', e.message)
     await m.react('❌')
-    conn.reply(
-      m.chat,
-      [
-        `🌸 *Error al descargar el video.*`,
-        ``,
-        `📋 *Detalle:* ${e.message}`,
-        ``,
-        `💡 *Sugerencias:*`,
-        `• Sé más específico en la búsqueda`,
-        `• Agrega "completo" o "sub español" al final`,
-        `• Verifica que yt-dlp esté actualizado`
-      ].join('\n'),
-      m
-    )
+    conn.reply(m.chat, `🌸 *Error de procesamiento.*\n\n📋 *Detalle:* ${e.message}`, m)
   }
 }
 
-handler.help     = ['animedl <nombre anime capitulo>']
+handler.help     = ['animedl <nombre> <capitulo> [--latino/--castellano]']
 handler.tags     = ['descargas']
-handler.command  = ['animedl', 'anime']
+handler.command  = ['animedl', 'anime', 'animex']
 handler.register = false
 
 export default handler
